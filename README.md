@@ -1,5 +1,7 @@
 # kubeportal-frontend
 
+https://kubeportal-dev.app.datexis.com/
+
 ## Project setup
 ```
 npm install
