@@ -1,4 +1,4 @@
-name: kubeportal-frontend-runner
+name: kubeportal-frontend
 
 on:
   push:
