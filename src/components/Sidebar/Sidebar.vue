@@ -1,17 +1,17 @@
 <template>
   <div>
-    Test
+
   </div>
 </template>
-
 <script>
+import Tabbar from './Tabbar'
 
 export default {
-  name: 'Home',
+name: 'Sidebar',
 
-  components: {
-
-  }
+components: {
+  Tabbar
+}
 
 }
 </script>

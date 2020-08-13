@@ -1,7 +1,13 @@
 module.exports = {
+  lintOnSave: process.env.NODE_ENV !== 'production',
   devServer: {
-    host: '0.0.0.0',
+    overlay: {
+      warnings: false,
+      errors: false
+    },
     compress: true,
-    disableHostCheck: true
+    disableHostCheck: true,
+    port: 8081,
+    host: '0.0.0.0'
   }
 }
