@@ -2,10 +2,21 @@ import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loade
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 
-Vue.use(Vuetify)
 
-export default new Vuetify({
+const vuetify = new Vuetify({
+  theme: {
+    themes: {
+      light: {
+        primary: '#424242',
+        secondary: '#b0bec5',
+        anchor: '#8c9eff',
+      },
+    },
+  },
   icons: {
     iconfont: 'mdi'
   }
 })
+Vue.use(Vuetify)
+
+export default vuetify
