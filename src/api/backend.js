@@ -20,7 +20,7 @@ export async function read (collection) {
 
 
 export async function readByField (collection, id) {
-  console.log(`collection/${id}`)
+  console.log(`${collection}/${id}`)
   try {
     const response = await axiosInstance.get(`${collection}/${id}`)
     return response.data
