@@ -9,9 +9,9 @@ const vuetify = new Vuetify({
       light: {
         primary: '#424242',
         secondary: '#b0bec5',
-        anchor: '#8c9eff',
-      },
-    },
+        anchor: '#8c9eff'
+      }
+    }
   },
   icons: {
     iconfont: 'mdi'
