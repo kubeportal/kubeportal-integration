@@ -48,7 +48,7 @@
             <v-tab-item class="items">
               <v-card flat>
                 <v-card-text>
-                  <Welcome />
+                  <Statistics />
                 </v-card-text>
               </v-card>
             </v-tab-item>
@@ -77,18 +77,25 @@
 <script>
 
 import Welcome from './components/Welcome'
+import Statistics from './components/Statistics'
 
 export default {
   name: 'App',
 
-  components: { Welcome },
-   data () {
+  components: { Statistics, Welcome },
+  data () {
     return {
       current_user: {}
     }
-   },
-
+  },
+  created () {
+    let state = this.$store.state
+    console.log(state)
+    for (let s in state) {
+      console.log(s)
+    }
   }
+}
 </script>
 
 <style scoped lang="scss">
