@@ -1,4 +1,4 @@
-FROM node:10.22.0-alpine3.9
+FROM node:12.18.3-alpine
 
 # copy project files and folders to the current working directory (folder)
 COPY package.json .
