@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css"><script src="https://code.iconify.design/1/1.0.3/iconify.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
   </head>
-  <body class="all">
+  <body>
     <noscript>
       <strong>We're sorry but this webpage doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
@@ -24,8 +24,19 @@
 </html>
 
 <style>
-  .all {
-    font-size: 0.85rem;
+  html {
+    font-size: 0.95rem;
     --font-family-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    .maincard {
+      margin: 5rem;
+    }
+  }
+  @media (max-device-width : 600px) {
+    html {
+      font-size: 0.8rem;
+    }
+    .maincard {
+      margin: 0rem;
+    }
   }
 </style>

@@ -1,7 +1,10 @@
 <template>
-  <b-card title="Cluster Statistics" class="ma-8 w-50">
+  <b-card class="maincard">
+    <b-card-header>
+      Cluster Statistics
+    </b-card-header>
 
-    <v-simple-table fixed-header dense>
+    <v-simple-table fixed-header>
       <template v-slot:default>
         <thead>
         <tr>
@@ -17,14 +20,13 @@
         </tbody>
       </template>
     </v-simple-table>
-
   </b-card>
 </template>
 
 <script>
+
 export default {
   name: 'Statistics',
-
   computed: {
     all_statistics () {
       console.log(this.$store.getters['get_all_statistics'])

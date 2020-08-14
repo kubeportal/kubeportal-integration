@@ -18,7 +18,6 @@ export async function read (collection) {
   }
 }
 
-
 export async function readByField (collection, id) {
   console.log(`${collection}/${id}`)
   try {
