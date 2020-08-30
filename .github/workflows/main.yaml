@@ -11,6 +11,23 @@ defaults:
     working-directory: kubeportal-api
 
 jobs:
+  TEST-DEV-API:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.5
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.5'
+      - name: install dependencies
+        run: |
+          apt-get update && apt-get install -y gcc make libc-dev musl-dev libffi-dev libssl-dev libpcre3-dev
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements-dev.txt; fi
+      - name: run Unittest
+        run: ./manage.py test --configuration=Development
+
   PUBLISH-DEV-API:
     runs-on: self-hosted
 
