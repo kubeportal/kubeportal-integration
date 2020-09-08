@@ -1,6 +1,6 @@
 <template>
-  <div class="ma-8 container-sm align-content-between">
-    <b-button v-for="app in webapps" :key="app.index" class="app-button blue-grey darken-3">
+  <div class="my-4 container-sm align-content-between">
+    <b-button v-for="app in webapps" :key="app.index" class="app-button">
       {{ app.name }}
     </b-button>
   </div>
@@ -11,11 +11,11 @@ export default {
   name: 'WebAppContainer',
   computed: {
     webapps () {
-      return this.$store.getters['get_webapps']
+      return this.$store.getters['statistics/get_webapps']
     }
   },
   async created () {
-    await this.$store.dispatch('get_webapps')
+    await this.$store.dispatch('statistics/get_webapps')
   }
 }
 </script>
@@ -27,5 +27,15 @@ export default {
     min-width: 110px;
     height: 8vh;
     color: white;
+    transition: 0.3s ease;
+    opacity: 0.8;
+    transform: translate(0, 0);
+    -ms-transform: translate(0, 0%);
+    background-color: #689F38;
+    border-color: #689F38;
+  }
+  .app-button:hover {
+    opacity: 1;
+    transform: scale(1.1);
   }
 </style>

@@ -1,31 +1,17 @@
 # kubeportal-frontend
 
-https://kubeportal-dev.app.datexis.com/
+### testlogin:
+- username: Peter, s77518
+- password: is not checked.
 
-## Project setup
-```
-npm install
-```
+### start
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+``
+$ make start
+``
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### update api
 
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+``
+$ make update-api
+``

@@ -1,5 +1,5 @@
 {
-  "name": "smart-md-frontend",
+  "name": "kubeportal-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -18,11 +18,14 @@
     "material-design-icons": "^3.0.1",
     "moment": "^2.24.0",
     "vue": "^2.6.11",
+    "vue-breakpoints": "^1.1.0",
     "vue-chartjs": "^3.4.2",
+    "vue-google-oauth2": "^1.5.5",
     "vue-router": "^3.1.3",
     "vuetify": "^2.0.0",
     "vuetify-loader": "^1.2.2",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "vuex-persist": "^2.2.0"
   },
   "devDependencies": {
     "@mdi/font": "^4.1.95",

@@ -1,62 +1,34 @@
 <template>
   <v-app >
     <v-main>
-      <Kubeportal />
+      <v-toolbar flat class="blue-grey darken-4 toolbar">
+        <v-icon class="icon">mdi-view-dashboard-variant</v-icon>
+        <v-toolbar-title class="title">Data Science Cluster</v-toolbar-title>
+      </v-toolbar>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
 
-import Welcome from './components/Welcome'
-import Statistics from './components/Statistics'
-import Kubeportal from './views/Kubeportal'
-
 export default {
-  name: 'App',
-
-  components: { Statistics, Welcome, Kubeportal },
-  data () {
-    return {
-      metrics: this.$store.getters['get_metrics']
-    }
-  },
-  methods: {
-    get_all_statistic_values () {
-      this.metrics.map(this.request_metric_value)
-    },
-    async request_metric_value (metric) {
-      let request_metric = metric.replace(/_/i, '')
-      await this.$store.dispatch('get_statistic_metric', request_metric)
-    }
-  },
-  created () {
-    this.get_all_statistic_values()
-  }
+  name: 'App'
 }
 </script>
 
 <style scoped lang="scss">
-  .icon {
+  .icon, .v-icon.icon {
     position: absolute;
-    left: 1vw
-  }
-
-  .sidenav {
-    height: 100vh;
-    position: absolute;
-    right: 0;
+    left: 15px;
+    color: floralwhite;
   }
   .toolbar {
-    background: #424242;
+    color: floralwhite;
   }
   .title {
-    padding: 0 2vw 0 4vw;
+    padding: 0 1rem 0 3rem;
+    color: floralwhite;
   }
-  .app {
-    background: #424242;
-  }
-  .v-icon.v-icon {
-    align-items: baseline;
-  }
+
 </style>
