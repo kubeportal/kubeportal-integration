@@ -28,7 +28,7 @@ export default {
   components: { KubeInstallation, KubeConfig, Profile },
   data () {
     return {
-      current_user: this.$store.getters['users/get_current_user']
+      current_user: this.$store.getters['users/get_current_user_details']
     }
   },
 

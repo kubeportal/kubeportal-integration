@@ -1,7 +1,7 @@
 <template>
   <div class="my-4 container-sm align-content-between">
     <b-button v-for="app in webapps" :key="app.index" class="app-button">
-      {{ app.name }}
+      {{ app.link_name }}
     </b-button>
   </div>
 </template>
@@ -11,11 +11,11 @@ export default {
   name: 'WebAppContainer',
   computed: {
     webapps () {
-      return this.$store.getters['statistics/get_webapps']
+      return this.$store.getters['users/get_current_user_webapps']
     }
   },
   async created () {
-    await this.$store.dispatch('statistics/get_webapps')
+    await this.$store.dispatch('users/get_current_user_webapps')
   }
 }
 </script>

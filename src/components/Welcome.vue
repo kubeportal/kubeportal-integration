@@ -4,7 +4,7 @@
       <b-card bg-variant="light" class="maincard">
         <b-card-body>
           <b-card-text>
-            Hello: {{ this.current_user.firstname }} !
+            Hello: {{ this.current_user_firstname }} !
           </b-card-text>
         </b-card-body>
       </b-card>
@@ -22,22 +22,20 @@ export default {
   components: { ContentCardHeader, WebAppContainer },
   data () {
     return {
-      statistics: this.$store.getters['statistics/get_api_statistics'],
-      current_user: this.$store.getters['users/get_current_user']
+      current_user_firstname: this.$store.getters['users/get_current_user_firstname']
     }
   },
   methods: {
-    get_all_statistic_values () {
-      this.statistics.map(stat => this.request_stat_value(stat))
+    get_cluster_infos () {
+      let cluster_request = this.$store.getters['statistics/get_cluster_request_info']
+      cluster_request.map(info => this.request_infos(info))
     },
-    async request_stat_value (stat) {
-      let request_stat = stat.replace(/_/i, '')
-      await this.$store.dispatch('statistics/get_statistics', request_stat)
-      console.log(this.$store.getters['statistics/get_statistics'])
+    async request_infos (info) {
+      await this.$store.dispatch('statistics/get_cluster_info', info)
     }
   },
   created () {
-    this.get_all_statistic_values()
+    this.get_cluster_infos()
   }
 }
 </script>
