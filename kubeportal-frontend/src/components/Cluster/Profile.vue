@@ -10,7 +10,7 @@
         Username: {{ this.current_user.username }}
       </b-card-text>
       <b-card-text>
-        Kubernetes Service Account: {{ this.current_user.service_account }}
+        Kubernetes Service Account: {{ this.current_user.k8s_account }}
       </b-card-text>
       </b-card-body>
     </b-card>

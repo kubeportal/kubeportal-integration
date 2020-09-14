@@ -17,7 +17,7 @@ def get_api_version():
 
 
 @api_bp.route(API_VERSION + '/users/<uid>', methods=['GET'])
-def get_current_user(uid):
+def get_current_user_details(uid):
     user = find_user(username=uid)
     return jsonify(user)
 
