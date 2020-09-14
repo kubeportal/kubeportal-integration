@@ -1,10 +1,13 @@
 # kubeportal-frontend
 
 ### testlogin:
-- username: Peter, s77518
+- username: doesn't matter
 - password: is not checked.
 
+
 ### start
+
+- install docker-compose
 
 ``
 $ make start
