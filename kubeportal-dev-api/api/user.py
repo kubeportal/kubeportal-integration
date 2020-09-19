@@ -66,7 +66,7 @@ def get_user_webapps(id):
 
 
 @login_bp.route(f'{API_VERSION}/users/<id>/groups', methods=['GET'])
-def get_user_webapps(id):
+def get_user_groups(id):
     user = mock.users[0]
     response = jsonify({"name": user.get('groups')})
     return jsonify(response), status.HTTP_200_OK
