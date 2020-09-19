@@ -37,7 +37,7 @@ class Backend(AdminLoggedInTestCase):
         # so that the result of sync is directly analyzed
         request = self._build_full_request_mock('admin:index')
         sync_success = kubernetes.sync(request)
-        self.assertEquals(sync_success, expect_success)
+        self.assertEqual(sync_success, expect_success)
 
     def setUp(self):
         super().setUp()
@@ -69,14 +69,15 @@ class Backend(AdminLoggedInTestCase):
 
     def test_new_ns_broken_name_sync(self):
         core_v1, rbac_v1 = kubernetes._load_config()
-        new_ns = KubernetesNamespace(name="foo_bar")
-        new_ns.save()
-        self._call_sync()
-        ns_names = [ns.metadata.name for ns in kubernetes.get_namespaces()]
-        self.assertNotIn("foo_bar", ns_names)
-        self.assertIn("foobar", ns_names)
-        self.assertEquals(KubernetesNamespace.objects.filter(name="foobar").exists(), True)
-        kubernetes._delete_k8s_ns("foobar", core_v1)
+        test_cases = {  "foo_bar": "foobar",
+                        "ABCDEF": "abcdef"}
+        for old, new  in test_cases.items():
+            new_ns = KubernetesNamespace(name=old)
+            new_ns.save()
+            self._call_sync()
+            ns_names = [ns.metadata.name for ns in kubernetes.get_namespaces()]
+            self.assertNotIn(old, ns_names)
+            self.assertIn(new, ns_names)
 
     def test_new_external_ns_sync(self):
         self._call_sync()
@@ -125,19 +126,19 @@ class Backend(AdminLoggedInTestCase):
     def test_special_k8s_approved(self):
         # Creating an auto_add_approved group should not change its member list.
         group = models.PortalGroup.objects.get(special_k8s_accounts=True)
-        self.assertEquals(group.members.count(), 0)
+        self.assertEqual(group.members.count(), 0)
         # Create a new user should not change the member list
         User = get_user_model()
         u = User(username="Hugo", email="a@b.de")
         u.save()
-        self.assertEquals(group.members.count(), 0)
+        self.assertEqual(group.members.count(), 0)
         # walk through approval workflow
         url = reverse('welcome')
         request = self.factory.get(url)
         u.send_access_request(request)
         u.save()
         # Just sending an approval request should not change to member list
-        self.assertEquals(group.members.count(), 0)
+        self.assertEqual(group.members.count(), 0)
         # Build full-fledged request object for logged-in admin
         request = self._build_full_request_mock('admin:index')
         # Prepare K8S namespace
@@ -149,7 +150,7 @@ class Backend(AdminLoggedInTestCase):
         assert(u.approve(request, new_svc))
         u.save()
         # Should lead to addition of user to the add_approved group
-        self.assertEquals(group.members.count(), 1)
+        self.assertEqual(group.members.count(), 1)
 
 
     def test_special_k8s_unapproved(self):
@@ -165,11 +166,11 @@ class Backend(AdminLoggedInTestCase):
                  state=models.UserState.ACCESS_APPROVED,
                  service_account = new_svc)
         u.save()
-        self.assertEquals(group.members.count(), 1)
+        self.assertEqual(group.members.count(), 1)
         # unapprove
         u.state=models.UserState.ACCESS_REJECTED
         u.save()
-        self.assertEquals(group.members.count(), 0)
+        self.assertEqual(group.members.count(), 0)
 
 
     def _test_user_rejection(self):
@@ -189,6 +190,20 @@ class Backend(AdminLoggedInTestCase):
 
     def test_user_rejection(self):
         self._test_user_rejection()
+
+    def test_request_approval_specific_administrator(self):
+        # Create a new user should not change the member list
+        User = get_user_model()
+        u = User(username="Hugo", email="a@b.de")
+        u.save()
+        # walk through approval workflow
+        url = reverse('welcome')
+        request = self.factory.get(url)
+        u.send_access_request(request, self.admin.username)
+        u.save()
+        # Build full-fledged request object for logged-in admin
+        request = self._build_full_request_mock('admin:index')
+        # create service account and namespace for user
 
     '''
     Create two users with the secondary (the later created) one having cluster access,
@@ -243,7 +258,7 @@ class Backend(AdminLoggedInTestCase):
         primary = User.objects.get(pk = primary.id)
 
         # Does primary have all the values of secondary user?
-        self.assertEquals(primary.comments, "secondary user comment")
+        self.assertEqual(primary.comments, "secondary user comment")
         assert(primary.portal_groups.filter(name = group1.name))
         assert(primary.portal_groups.filter(name = group2.name))
         assert(primary.has_access_approved)
@@ -255,6 +270,8 @@ class Backend(AdminLoggedInTestCase):
     The secondary user should be deleted.
     '''
     def test_user_merge_access_rejected(self):
+        request = self._build_full_request_mock('admin:index')
+
         User = get_user_model()
         primary = User(
                 username="HUGO",
@@ -263,8 +280,13 @@ class Backend(AdminLoggedInTestCase):
 
         ns = KubernetesNamespace(name="default")
         ns.save()
+
         new_svc = KubernetesServiceAccount(name="foobar", namespace=ns)
         new_svc.save()
+        # Perform approval
+        assert(primary.approve(request, new_svc))
+        primary.save()
+
         secondary = User(
                 username="hugo",
                 state=models.UserState.ACCESS_APPROVED,

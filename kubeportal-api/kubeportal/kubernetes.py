@@ -116,7 +116,7 @@ def _sync_namespaces(request, core_v1, rbac_v1):
                 # Portal namespaces without UID are new and should be created in K8S
                 logger.debug("Namespace record {} has no UID, creating it in Kubernetes ...".format(portal_ns.name))
                 # Sanitize name, K8S only allows DNS names for namespaces
-                sanitized_name = re.sub('[^a-zA-Z0-9]', '', portal_ns.name)
+                sanitized_name = re.sub('[^a-zA-Z0-9]', '', portal_ns.name).lower()
                 if sanitized_name !=  portal_ns.name:
                     logger.warning("Given name '{}' for new Kubernetes namespace is invalid, replacing it with '{}'".format(portal_ns.name, sanitized_name))
                     messages.warning(request, "Given name '{}' for new Kubernetes namespace was invalid, chosen name is now '{}'".format(portal_ns.name, sanitized_name))
@@ -365,23 +365,33 @@ def get_apiserver():
     else:
         return settings.API_SERVER_EXTERNAL
 
+
 def get_kubernetes_version():
     core_v1, rbac_v1 = _load_config()
-    return core_v1.list_namespaced_pod(
-        "kube-system", label_selector="component=kube-apiserver").items[0].spec.containers[0].image.split(":")[1]
+    pods = core_v1.list_namespaced_pod("kube-system").items
+    for pod in pods:
+        for container in pod.spec.containers:
+            if 'kube-apiserver' in container.image:
+                return container.image.split(":")[1]
+    logger.error(f"Kubernetes version not identifiable, list of pods in 'kube-system': {pods}.")
+    return None
+
 
 def get_number_of_pods():
     core_v1, rbac_v1 = _load_config()
     return len(core_v1.list_pod_for_all_namespaces().items)
 
+
 def get_number_of_nodes():
     core_v1, rbac_v1 = _load_config()
     return len(core_v1.list_node().items)
+
 
 def get_number_of_cpus():
     core_v1, rbac_v1 = _load_config()
     nodes = core_v1.list_node().items
     return sum([int(node.status.capacity['cpu']) for node in nodes])
+
 
 def get_memory_sum():
     core_v1, rbac_v1 = _load_config()
@@ -389,7 +399,9 @@ def get_memory_sum():
     mems = [int(node.status.capacity['memory'][:-2]) for node in nodes]
     return sum(mems) / 1000000  # in GiBytes
 
+
 def get_number_of_volumes():
     core_v1, rbac_v1 = _load_config()
     return(len(core_v1.list_persistent_volume().items))
+
 

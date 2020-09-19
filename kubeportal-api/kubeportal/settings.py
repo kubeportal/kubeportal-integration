@@ -5,7 +5,8 @@ from kubeportal.secret import get_secret_key
 
 
 class Common(Configuration):
-    VERSION = '0.3.14'
+    VERSION = '0.4.0'
+    API_VERSION = 'v1.2.0'
 
     SITE_ID = 1
 
@@ -32,9 +33,12 @@ class Common(Configuration):
         'allauth.socialaccount',
         'allauth.socialaccount.providers.google',
         'allauth.socialaccount.providers.oauth2',
+        'silk',
+        'django_extensions',
     ]
 
     MIDDLEWARE = [
+        'silk.middleware.SilkyMiddleware',
         'corsheaders.middleware.CorsMiddleware',
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
@@ -66,12 +70,16 @@ class Common(Configuration):
 
     REST_FRAMEWORK = {
             'DEFAULT_VERSIONING_CLASS':
-            'rest_framework.versioning.NamespaceVersioning',
+            'rest_framework.versioning.URLPathVersioning',
             'DEFAULT_AUTHENTICATION_CLASSES': [
                 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
                 ],
             'DEFAULT_PERMISSION_CLASSES': [
                 'rest_framework.permissions.IsAuthenticated',
+                ],
+            'DEFAULT_VERSION': API_VERSION,
+            'ALLOWED_VERSIONS': [
+                API_VERSION
                 ]
             }
 
@@ -119,6 +127,7 @@ class Common(Configuration):
             'SCOPE': ['profile', 'email'],
         }
 
+    LOGIN_URL = '/'
     LOGIN_REDIRECT_URL = '/welcome/'
     LOGOUT_REDIRECT_URL = '/'
     STATIC_URL = '/static/'
@@ -152,6 +161,17 @@ class Common(Configuration):
     ADMINS = [(str(ADMIN_NAME), str(ADMIN_EMAIL)), ]
 
     OIDC_AFTER_USERLOGIN_HOOK = 'kubeportal.security.oidc_login_hook'
+
+    ACCOUNT_ADAPTER = 'kubeportal.allauth.AccountAdapter'
+
+    SILKY_AUTHENTICATION = True  
+    SILKY_AUTHORISATION = True  
+
+    # override default response format for /api/login endpoint
+    REST_AUTH_SERIALIZERS = {
+        'JWT_SERIALIZER': 'kubeportal.api.serializers.LoginSuccessSerializer'
+    }
+
 
 class Development(Common):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -204,7 +224,7 @@ class Development(Common):
             },
             'django': {
                 'handlers': ['console', ],
-                'level': 'WARNING',
+                'level': 'INFO',
                 'propagate': True
             },
         }
