@@ -18,5 +18,5 @@ pull-api:
 	git subtree pull --prefix kubeportal-api https://github.com/kubeportal/kubeportal.git master --squash
 
 push-api:
-	git subtree push --prefix kubeportal-api https://github.com/kubeportal/kubeportal.git fe-api --squash
+	git subtree push --prefix kubeportal-api https://github.com/kubeportal/kubeportal.git master --squash
 
