@@ -39,8 +39,8 @@ export default {
   methods: {
     async login () {
       const request_body = { username: this.username, password: this.password }
-      const response = await this.$store.dispatch('users/post_login_data', request_body)
-      this.handle_login_response(response)
+      const user_data_response = await this.$store.dispatch('users/post_login_data', request_body)
+      await this.handle_login_response(user_data_response)
     },
     async signInWithGoogle () {
       try {
@@ -57,17 +57,16 @@ export default {
         console.log(error)
       }
     },
-    async handle_login_response (response) {
-      if (response.status === 200) {
-        console.log(response.data)
-        console.log(response.header)
-        this.$store.commit('users/set_user', response.data)
+    async handle_login_response (user_data_response) {
+      if (user_data_response.status === 200) {
+        console.log(user_data_response.data)
+        await this.$store.dispatch('users/get_current_user_details', user_data_response.data['id'])
         this.$store.commit('users/set_is_authenticated', 'true')
-        this.$router.push({ name: 'Kubeportal' })
+        await this.$router.push({name: 'Kubeportal' })
       } else {
         console.log('login failed')
-        this.$store.commit('users/set_is_authenticated', 'failed')
-        this.$router.push({ name: 'Home' })
+        this.$store.commit('users/set_is_authenticated', 'false')
+        await this.$router.push({name: 'Home' })
       }
     }
   },

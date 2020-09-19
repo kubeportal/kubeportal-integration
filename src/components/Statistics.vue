@@ -35,8 +35,7 @@ export default {
   components: { ContentCardHeader },
   computed: {
     all_statistics () {
-      console.log(this.$store.getters['statistics/get_statistics'])
-      return this.$store.getters['statistics/get_statistics']
+      return this.$store.getters['statistics/get_cluster_info']
     }
   }
 }

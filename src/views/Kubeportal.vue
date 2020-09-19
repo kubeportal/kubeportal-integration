@@ -91,7 +91,7 @@ export default {
   components: { Statistics, Welcome, Config, showAt, Generator },
   data () {
     return {
-      statistics: this.$store.getters['statistics/get_statistics']
+      statistics: this.$store.getters['statistics/get_cluster_info']
     }
   },
   methods: {
@@ -104,9 +104,9 @@ export default {
     },
     logout () {
       this.$store.commit('users/set_user', {})
-      this.$store.commit('statistics/update_statistics', [])
+      this.$store.commit('statistics/update_cluster_info', [])
       this.$store.commit('users/set_token', '')
-      this.$store.commit('statistics/update_webapps', [])
+      this.$store.commit('users/set_webapps', [])
       this.$store.commit('users/set_is_authenticated', '')
       this.$router.push({ name: 'Home' })
     },
@@ -116,7 +116,7 @@ export default {
   },
   computed: {
     userIsAdmin () {
-      let current_user = this.$store.getters['users/get_current_user']
+      let current_user = this.$store.getters['users/get_current_user_details']
       return current_user['role'] === 'admin'
     }
   },
