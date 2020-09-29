@@ -32,13 +32,16 @@ const users_container = {
     actions: {
       async get_current_user_details (context, field) {
         const response = await backend.readByField('/users', field)
-        context.commit('set_user_details', response.data)
+        console.log('set user details')
+        context.commit('set_user_details', response)
         return response
       },
       async post_login_data (context, request_body) {
         const response = await backend.create('/login', request_body)
-        context.commit('set_current_user_id', response.data['id'])
-        context.commit('set_current_user_firstname', response.data['firstname'])
+        console.log('post login data response:')
+        console.log(response)
+        context.commit('set_current_user_id', response['id'])
+        context.commit('set_current_user_firstname', response['firstname'])
         return response
       },
       async authorize_google_user (context, auth_response) {
@@ -47,7 +50,7 @@ const users_container = {
       },
       async get_current_user_webapps (context) {
         const response = await backend.readByFieldRessource('/users', context.state.current_user_id, 'webapps')
-        context.commit('set_current_user_webapps', response.data)
+        context.commit('set_current_user_webapps', response)
         return response
       }
     }

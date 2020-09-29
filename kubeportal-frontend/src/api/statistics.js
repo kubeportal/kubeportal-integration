@@ -23,7 +23,7 @@ const statistics = {
       async get_cluster_info (context, field) {
         const infos = await backend.readByField('/cluster', field)
         console.log(infos)
-        context.commit('update_cluster_info', infos.data)
+        context.commit('update_cluster_info', infos)
         return infos
       }
     }

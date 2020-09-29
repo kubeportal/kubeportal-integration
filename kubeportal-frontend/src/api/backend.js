@@ -7,8 +7,8 @@ function canReadURLFromEnv () {
 }
 
 export function setBaseURLWithDefaultOrEnvValue () {
-  const API_VERSION = 'api/v1.2.0'
-  const defaultUrl = 'http://127.0.0.1:8000'
+  const API_VERSION = 'v1.2.0'
+  const defaultUrl = 'http://127.0.0.1:8000/api'
   const baseUrl = canReadURLFromEnv() ? process.env['VUE_APP_BASE_URL'] : defaultUrl
   return `${baseUrl}/${API_VERSION}`
 }
@@ -17,7 +17,8 @@ const config = {
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true
 }
 
 export const axiosInstance = axios.create(config)
@@ -25,6 +26,8 @@ export const axiosInstance = axios.create(config)
 export async function read (collection) {
   try {
     const response = await axiosInstance.get(collection)
+    console.log(`READ ${collection}`)
+    console.log(response)
     return response
   } catch (e) {
     console.log(e)
@@ -34,6 +37,8 @@ export async function read (collection) {
 export async function readByField (collection, id) {
   try {
     const response = await axiosInstance.get(`${collection}/${id}`)
+    console.log(`READ ${collection}/${id}`)
+    console.log(response)
     return response
   } catch (e) {
     console.log(e)
@@ -43,6 +48,7 @@ export async function readByField (collection, id) {
 export async function readByFieldRessource (collection, id, ressource) {
   try {
     const response = await axiosInstance.get(`${collection}/${id}/${ressource}`)
+    console.log(`READ ${collection}/${id}/${ressource}`)
     return response
   } catch (e) {
     console.log(e)
