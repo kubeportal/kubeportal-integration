@@ -9,7 +9,7 @@ services:
       context: ./kubeportal-frontend
       dockerfile: Dockerfile
     ports:
-      - "8086:8080"
+      - "8086:8086"
     restart: always
 
   api:
