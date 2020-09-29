@@ -1,5 +1,7 @@
 import os
+from urllib.parse import urlparse
 from configurations import Configuration, values
+
 
 from kubeportal.secret import get_secret_key
 
@@ -20,6 +22,7 @@ class Common(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+        'corsheaders',
         'sortedm2m_filter_horizontal_widget',
         'oidc_provider',
         'rest_framework',
@@ -47,7 +50,7 @@ class Common(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'kubeportal.middleware.HideAdminForNonStaffMiddleware'    
+        'kubeportal.middleware.HideAdminForNonStaffMiddleware'
     ]
 
     ROOT_URLCONF = 'kubeportal.urls'
@@ -110,7 +113,7 @@ class Common(Configuration):
         'allauth.account.auth_backends.AuthenticationBackend'
     )
 
-    SOCIALACCOUNT_QUERY_EMAIL=True
+    SOCIALACCOUNT_QUERY_EMAIL = True
     SOCIALACCOUNT_PROVIDERS = {}
     AUTH_AD_DOMAIN = values.Value(None, environ_prefix='KUBEPORTAL')
     AUTH_AD_SERVER = values.Value(None, environ_prefix='KUBEPORTAL')
@@ -136,9 +139,13 @@ class Common(Configuration):
     USE_L10N = True
     USE_TZ = True
 
-    CORS_ORIGIN_ALLOW_ALL = True
-
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_URLS = values.ListValue([], environ_prefix='KUBEPORTAL')
+    ALLOWS_HOSTS = [urlparse(url).netloc for url in ALLOWED_URLS.value]
+    # Please note that '*' is no longer an option:
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Credentialed_requests_and_wildcards
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOWED_ORIGINS = ALLOWED_URLS.value
 
     AUTH_USER_MODEL = 'kubeportal.User'
 
@@ -189,8 +196,6 @@ class Development(Common):
 
     DEBUG = True
 
-    REDIRECT_HOSTS = ['localhost', '127.0.0.1']
-
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     EMAIL_HOST = values.Value('localhost', environ_prefix='KUBEPORTAL')
 
@@ -240,8 +245,6 @@ class Production(Common):
 
     STATIC_ROOT = values.Value('', environ_prefix='KUBEPORTAL')
     STATICFILES_DIRS = values.TupleValue('', environ_prefix='KUBEPORTAL')
-
-    REDIRECT_HOSTS = values.TupleValue(None, environ_prefix='KUBEPORTAL')
 
     EMAIL_HOST = values.Value('localhost', environ_prefix='KUBEPORTAL')
 

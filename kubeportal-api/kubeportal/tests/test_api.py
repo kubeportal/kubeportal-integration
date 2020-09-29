@@ -24,8 +24,8 @@ class ApiTestCase(AdminLoggedOutTestCase):
         self.assertEqual(response.status_code, 200)
         self.csrftoken = response.cookies['csrftoken']
 
-    def get(self, relative_url):
-        return self.client.get('http://testserver' + relative_url)
+    def get(self, relative_url, headers=None):
+        return self.client.get('http://testserver' + relative_url, headers=headers)
 
     def patch(self, relative_url, data):
         return self.client.patch('http://testserver' + relative_url,
@@ -40,15 +40,6 @@ class ApiTestCase(AdminLoggedOutTestCase):
     def api_login(self):
         response = self.post(F'/api/{API_VERSION}/login', {'username': admin_data['username'], 'password': admin_clear_password})
         self.assertEqual(response.status_code, 200)
-        # The login API call returns the JWT + extra information as JSON in the body, but also sets a cookie with the JWT.
-        # This means that for all test cases here, the JWT must not handed over explicitely,
-        # since the Python http client has the cookie anyway.
-        assert('kubeportal-auth' in response.cookies)
-        data = response.json()
-        self.assertEqual(2, len(data))
-        self.assertIn('firstname', data)
-        self.assertIn('id', data)
-        self.assertEqual(data['id'], self.admin.pk)
 
 
 class ApiAnonymous(ApiTestCase):
@@ -57,6 +48,27 @@ class ApiAnonymous(ApiTestCase):
     '''
     def setUp(self):
         super().setUp()
+
+    def test_api_login(self):
+        response = self.post(F'/api/{API_VERSION}/login', {'username': admin_data['username'], 'password': admin_clear_password})
+        self.assertEqual(response.status_code, 200)
+        # The login API call returns the JWT + extra information as JSON in the body, but also sets a cookie with the JWT.
+        # This means that for all test cases here, the JWT must not handed over explicitely,
+        # since the Python http client has the cookie anyway.
+        self.assertIn('Set-Cookie', response.headers)
+        self.assertIn('kubeportal-auth=', response.headers['Set-Cookie'])
+        from http.cookies import SimpleCookie
+        cookie = SimpleCookie() 
+        cookie.load(response.headers['Set-Cookie'])
+        self.assertEqual(cookie['kubeportal-auth']['path'], '/')  
+        self.assertEqual(cookie['kubeportal-auth']['samesite'], 'Lax,')  
+        self.assertEqual(cookie['kubeportal-auth']['httponly'], True)  
+        data = response.json()
+        self.assertEqual(2, len(data))
+        self.assertIn('firstname', data)
+        self.assertIn('id', data)
+        self.assertEqual(data['id'], self.admin.pk)
+
 
     def test_api_wrong_login(self):
         response = self.post(F'/api/{API_VERSION}/login', {'username': admin_data['username'], 'password': 'blabla'})
@@ -142,6 +154,26 @@ class ApiLocalUser(ApiTestCase):
                 data = response.json()
                 self.assertIn('value', data.keys())
                 self.assertIsNotNone(data['value'])
+
+    @override_settings(CORS_ALLOWED_ORIGINS=['http://testserver', ],
+                       CORS_ALLOW_CREDENTIALS=True)
+    def test_cors_single_origin(self):
+        # Only requests with 'Origin' header are CORS-related:
+        # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
+        # https://github.com/adamchainz/django-cors-headers/blob/master/tests/test_middleware.py
+        headers = {'Origin': 'http://testserver'}
+        response = self.get(f'/api/{API_VERSION}/cluster/portal_version', headers=headers)
+        self.assertEqual(response.headers['Access-Control-Allow-Origin'], 'http://testserver')
+        self.assertEqual(response.headers['Access-Control-Allow-Credentials'], 'true')
+
+    @override_settings(CORS_ALLOWED_ORIGINS=['http://testserver', 'https://example.org:8000'])
+    def test_cors_multiple_origin(self):
+        headers = {'Origin': 'http://testserver'}
+        response = self.get(f'/api/{API_VERSION}/cluster/portal_version', headers=headers)
+        self.assertEqual(response.headers['Access-Control-Allow-Origin'], 'http://testserver')
+        headers = {'Origin': 'https://example.org:8000'}
+        response = self.get(f'/api/{API_VERSION}/cluster/portal_version', headers=headers)
+        self.assertEqual(response.headers['Access-Control-Allow-Origin'], 'https://example.org:8000')
 
     def test_cluster_invalid(self):
         response = self.get(F'/api/{API_VERSION}/cluster/foobar')
