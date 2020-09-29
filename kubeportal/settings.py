@@ -1,11 +1,14 @@
 import os
+from urllib.parse import urlparse
 from configurations import Configuration, values
+
 
 from kubeportal.secret import get_secret_key
 
 
 class Common(Configuration):
-    VERSION = '0.3.14'
+    VERSION = '0.4.0'
+    API_VERSION = 'v1.2.0'
 
     SITE_ID = 1
 
@@ -19,6 +22,7 @@ class Common(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+        'corsheaders',
         'sortedm2m_filter_horizontal_widget',
         'oidc_provider',
         'rest_framework',
@@ -32,9 +36,12 @@ class Common(Configuration):
         'allauth.socialaccount',
         'allauth.socialaccount.providers.google',
         'allauth.socialaccount.providers.oauth2',
+        'silk',
+        'django_extensions',
     ]
 
     MIDDLEWARE = [
+        'silk.middleware.SilkyMiddleware',
         'corsheaders.middleware.CorsMiddleware',
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
@@ -43,7 +50,7 @@ class Common(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'kubeportal.middleware.HideAdminForNonStaffMiddleware'    
+        'kubeportal.middleware.HideAdminForNonStaffMiddleware'
     ]
 
     ROOT_URLCONF = 'kubeportal.urls'
@@ -66,12 +73,16 @@ class Common(Configuration):
 
     REST_FRAMEWORK = {
             'DEFAULT_VERSIONING_CLASS':
-            'rest_framework.versioning.NamespaceVersioning',
+            'rest_framework.versioning.URLPathVersioning',
             'DEFAULT_AUTHENTICATION_CLASSES': [
                 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
                 ],
             'DEFAULT_PERMISSION_CLASSES': [
                 'rest_framework.permissions.IsAuthenticated',
+                ],
+            'DEFAULT_VERSION': API_VERSION,
+            'ALLOWED_VERSIONS': [
+                API_VERSION
                 ]
             }
 
@@ -102,7 +113,7 @@ class Common(Configuration):
         'allauth.account.auth_backends.AuthenticationBackend'
     )
 
-    SOCIALACCOUNT_QUERY_EMAIL=True
+    SOCIALACCOUNT_QUERY_EMAIL = True
     SOCIALACCOUNT_PROVIDERS = {}
     AUTH_AD_DOMAIN = values.Value(None, environ_prefix='KUBEPORTAL')
     AUTH_AD_SERVER = values.Value(None, environ_prefix='KUBEPORTAL')
@@ -119,6 +130,7 @@ class Common(Configuration):
             'SCOPE': ['profile', 'email'],
         }
 
+    LOGIN_URL = '/'
     LOGIN_REDIRECT_URL = '/welcome/'
     LOGOUT_REDIRECT_URL = '/'
     STATIC_URL = '/static/'
@@ -127,9 +139,13 @@ class Common(Configuration):
     USE_L10N = True
     USE_TZ = True
 
-    CORS_ORIGIN_ALLOW_ALL = True
-
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_URLS = values.ListValue([], environ_prefix='KUBEPORTAL')
+    ALLOWS_HOSTS = [urlparse(url).netloc for url in ALLOWED_URLS.value]
+    # Please note that '*' is no longer an option:
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Credentialed_requests_and_wildcards
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOWED_ORIGINS = ALLOWED_URLS.value
 
     AUTH_USER_MODEL = 'kubeportal.User'
 
@@ -153,6 +169,17 @@ class Common(Configuration):
 
     OIDC_AFTER_USERLOGIN_HOOK = 'kubeportal.security.oidc_login_hook'
 
+    ACCOUNT_ADAPTER = 'kubeportal.allauth.AccountAdapter'
+
+    SILKY_AUTHENTICATION = True  
+    SILKY_AUTHORISATION = True  
+
+    # override default response format for /api/login endpoint
+    REST_AUTH_SERIALIZERS = {
+        'JWT_SERIALIZER': 'kubeportal.api.serializers.LoginSuccessSerializer'
+    }
+
+
 class Development(Common):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     DATABASES = {
@@ -168,8 +195,6 @@ class Development(Common):
     PROJECT_DIR = os.path.dirname(__file__)
 
     DEBUG = True
-
-    REDIRECT_HOSTS = ['localhost', '127.0.0.1']
 
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     EMAIL_HOST = values.Value('localhost', environ_prefix='KUBEPORTAL')
@@ -204,7 +229,7 @@ class Development(Common):
             },
             'django': {
                 'handlers': ['console', ],
-                'level': 'WARNING',
+                'level': 'INFO',
                 'propagate': True
             },
         }
@@ -220,8 +245,6 @@ class Production(Common):
 
     STATIC_ROOT = values.Value('', environ_prefix='KUBEPORTAL')
     STATICFILES_DIRS = values.TupleValue('', environ_prefix='KUBEPORTAL')
-
-    REDIRECT_HOSTS = values.TupleValue(None, environ_prefix='KUBEPORTAL')
 
     EMAIL_HOST = values.Value('localhost', environ_prefix='KUBEPORTAL')
 

@@ -152,6 +152,25 @@ class User(AbstractUser):
     service_account = models.ForeignKey(
         KubernetesServiceAccount, related_name="portal_users", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Kubernetes account", help_text="Kubernetes namespace + service account of this user.")
 
+    def k8s_namespace(self):
+        '''
+        Property used by the API serializer.
+        '''
+        if self.service_account:
+            return self.service_account.namespace
+        else:
+            return None
+
+    def web_applications(self, include_invisible):
+        '''
+        Returns a querset for the list of web applications allowed for this
+        user.
+        '''
+        if include_invisible:
+            return WebApplication.objects.filter(portal_groups__members__pk=self.pk)
+        else:
+            return WebApplication.objects.filter(portal_groups__members__pk=self.pk, link_show=True)
+
     def can_subauth(self, webapp):
         user_groups_with_this_app = self.portal_groups.filter(can_web_applications__in=[webapp.pk])
         allowed = user_groups_with_this_app.count() > 0
@@ -178,12 +197,15 @@ class User(AbstractUser):
         return result
 
     @transition(field=state, source=[UserState.NEW, UserState.ACCESS_REQUESTED, UserState.ACCESS_APPROVED, UserState.ACCESS_REJECTED], target=UserState.ACCESS_REQUESTED)
-    def send_access_request(self, request):
+    def send_access_request(self, request, administrator=None):
         '''
         Requests approval for cluster access.
 
         Note: The user object must be saved by the caller, to reflect the state change,
               when this method returns "True".
+
+        Note: The parameter administrator is an optional argument which can be
+              used to send an access request to a specific super user.
         '''
         self.approval_id = uuid.uuid4()
 
@@ -196,12 +218,22 @@ class User(AbstractUser):
         text_mail = strip_tags(html_mail)
         subject = 'Request for access to "{0}"'.format(settings.BRANDING)
 
-        cluster_admins = User.objects.filter(
-            is_staff=True).values_list('email', flat=True)
+        cluster_admins = []
+
+        if administrator:
+            cluster_admins.append(User.objects.get(username=administrator))
+            logger.info(F"Sending access request from '{self.username}' to '{administrator}'")
+        else:
+            for admin in User.objects.filter(is_superuser=True):
+                cluster_admins.append(admin)
+            logger.info(F"Sending access request from '{self.username}' to all administrators")
+
+        cluster_admin_emails = [admin.email for admin in cluster_admins]
 
         try:
             send_mail(subject, text_mail, settings.ADMIN_EMAIL,
-                      cluster_admins, html_message=html_mail, fail_silently=False)
+                      cluster_admin_emails, html_message=html_mail, fail_silently=False)
+
             logger.debug(
                 'Sent email to admins about access request from ' + str(self))
             return True

@@ -25,14 +25,14 @@ class CleanupView(LoginRequiredMixin, TemplateView):
 
         visible_namespaces = KubernetesNamespace.objects.filter(visible=True)
         counted_service_accounts = visible_namespaces.annotate(Count('service_accounts'))
-        context['namespaces_no_portal_users'] = [ns for ns in counted_service_accounts if ns.service_accounts__count == 1]
+        context['namespaces_no_portal_users'] = [ns for ns in counted_service_accounts if ns.service_accounts__count == 0]
 
         context['namespaces_no_pods'] = []
         pod_list = kubernetes.get_pods()
         for ns in visible_namespaces:
             ns_has_pods = False
             for pod in pod_list:
-                if pod.metadata.namespace == ns:
+                if pod.metadata.namespace == ns.name:
                     ns_has_pods = True
                     break
             if not ns_has_pods:
@@ -40,5 +40,5 @@ class CleanupView(LoginRequiredMixin, TemplateView):
 
         context['months'] = 12
         x_months_ago = datetime.now() - timedelta(days=30 * context['months']) # 30 days (1 month times the amount of months we look behind)
-        context['old_service_accounts'] = list(User.objects.filter(date_joined__lte = x_months_ago))
+        context['old_service_accounts'] = list(User.objects.filter(last_login__lte = x_months_ago))
         return context
