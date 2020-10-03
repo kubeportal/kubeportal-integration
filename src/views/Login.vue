@@ -7,20 +7,18 @@
       <b-card-body>
         <v-alert class="alert" dense outlined type="error" v-if="is_authenticated==='failed'"> Login Failed.</v-alert>
         <b-card-text>
-        <v-text-field label="user name" v-model="username" required></v-text-field>
-        <v-text-field type="password" v-model="password" label="password" required></v-text-field>
-      </b-card-text>
+          <v-text-field label="user name" v-model="username" required></v-text-field>
+          <v-text-field type="password" v-model="password" label="password" required></v-text-field>
+        </b-card-text>
         <div class="row">
-          <b-button class="signin" @click="login">
-            Sign In
-          </b-button>
+          <b-button class="signin" @click="login">Sign In</b-button>
         </div>
         <div class="row"><p class="my-4 text">or</p></div>
         <div class="row">
-        <b-button class="signin" @click="signInWithGoogle">
-          <v-icon  white small left>mdi-google</v-icon>
-          Continue with Google
-        </b-button>
+          <b-button class="signin" @click="signInWithGoogle">
+            <v-icon  white small left>mdi-google</v-icon>
+            Continue with Google
+          </b-button>
         </div>
       </b-card-body>
     </b-card>
@@ -60,13 +58,14 @@ export default {
     async handle_login_response (user_data_response) {
       if (user_data_response.status === 200) {
         console.log(user_data_response.data)
-        await this.$store.dispatch('users/get_current_user_details', user_data_response.data['id'])
+        localStorage.setItem('api_token', user_data_response.data['token'])
+        await this.$store.dispatch('users/get_user_details', user_data_response.data['id'])
         this.$store.commit('users/set_is_authenticated', 'true')
-        await this.$router.push({name: 'Kubeportal' })
+        await this.$router.push({ name: 'Kubeportal' })
       } else {
         console.log('login failed')
         this.$store.commit('users/set_is_authenticated', 'false')
-        await this.$router.push({name: 'Home' })
+        await this.$router.push({ name: 'Home' })
       }
     }
   },
@@ -86,12 +85,12 @@ export default {
     min-width: 300px;
   }
   .signin {
-    width: 75%;
     color: floralwhite;
     background-color: #689F38;
     margin: auto;
+    width: 100%
   }
-  .text {
+  .text, .row {
     margin: auto;
   }
   .card-header {
@@ -100,5 +99,4 @@ export default {
   .alert {
     margin: 1vw 0 1vw 0;
   }
-
 </style>

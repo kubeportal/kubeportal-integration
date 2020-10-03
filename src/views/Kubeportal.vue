@@ -8,6 +8,12 @@
         </show-at>
       </v-tab>
       <v-tab>
+        <v-icon class="icon" left>mdi-account</v-icon>
+        <show-at breakpoint="mediumAndAbove">
+          <div class="title"><small>Profile</small></div>
+        </show-at>
+      </v-tab>
+      <v-tab>
         <v-icon class="icon" left>mdi-file-document-outline</v-icon>
         <show-at breakpoint="mediumAndAbove">
           <div class="title"><small>Cluster</small></div>
@@ -31,12 +37,6 @@
           <div class="title"><small>Admin</small></div>
         </show-at>
       </v-tab>
-      <v-tab>
-        <v-icon class="icon" left>mdi-cog-outline</v-icon>
-        <show-at breakpoint="mediumAndAbove">
-          <div class="title"><small>Settings</small></div>
-        </show-at>
-      </v-tab>
       <v-tab @click="logout">
         <v-icon class="icon" left>mdi-logout-variant</v-icon>
         <show-at breakpoint="mediumAndAbove">
@@ -51,7 +51,13 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-
+      <v-tab-item class="items">
+        <v-card flat>
+          <v-card-text>
+            <Profile />
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
       <v-tab-item class="items">
         <v-card flat>
           <v-card-text>
@@ -81,14 +87,15 @@
 
 import Welcome from '@/components/Welcome'
 import Statistics from '@/components/Statistics'
-import Config from '@/components/Cluster/Config'
+import Config from '@/components/Cluster/Cluster'
 import Generator from '@/components/Generator/Generator'
+import Profile from '@/components/Profile/Profile'
 import { showAt } from 'vue-breakpoints'
 
 export default {
   name: 'App',
 
-  components: { Statistics, Welcome, Config, showAt, Generator },
+  components: { Statistics, Welcome, Config, Generator, Profile, showAt },
   data () {
     return {
       statistics: this.$store.getters['statistics/get_cluster_info']
@@ -99,8 +106,8 @@ export default {
       this.statistics.map(this.request_stat_value)
     },
     async request_stat_value (stat) {
-      let request_stat = stat.replace(/_/i, '')
-      await this.$store.dispatch('statistics/get_statistic_stat', request_stat)
+      const token = this.$store.getters['users/get_user_token']
+      await this.$store.dispatch('statistics/get_cluster_info', stat, token)
     },
     logout () {
       this.$store.commit('users/set_user', {})
