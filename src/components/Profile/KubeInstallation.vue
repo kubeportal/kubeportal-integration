@@ -3,43 +3,39 @@
     <b-card-header>Using Kubectl</b-card-header>
     <b-card-body>
       <b-card-text>
-        <div class="container-fluid">
-        <button><v-icon>mdi-download</v-icon>config</button>
-        <p class="content">This configuration file is needed for Kubernetes client tools on your computer.
-          It contains your personal access token.</p>
-        </div>
+        <Download />
+        <v-divider></v-divider>
         <div class="row">
           <div class="col">
-          <v-tooltip right>
-            <template v-slot:activator="{ on, attrs }">
-              <b-button v-bind="attrs" v-on="on" class="btn btn-secondary" aria-expanded="true" v-b-toggle.accordion-1>
-                <v-icon class="icon" left>mdi-apple</v-icon>
-                <v-icon class="icon" left>mdi-linux</v-icon>
-                MacOS / Linux / Unix
-              </b-button>
-            </template>
-            <span>{{ tooltip }}</span>
-          </v-tooltip>
-          <b-collapse id="accordion-1" v-b-visible accordion="accordion1" role="tabpanel">
-          <OSInstallation :instructions="macUnix" />
-          </b-collapse>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <b-button v-bind="attrs" v-on="on" class="btn btn-secondary" aria-expanded="true" v-b-toggle.accordion-1>
+                  <v-icon class="icon" left>mdi-apple</v-icon>
+                  <v-icon class="icon" left>mdi-linux</v-icon>
+                  MacOS / Linux / Unix
+                </b-button>
+              </template>
+              <span>{{ tooltip }}</span>
+            </v-tooltip>
+            <b-collapse id="accordion-1" v-b-visible accordion="accordion1" role="tabpanel">
+              <OSInstallation :instructions="macUnix" />
+            </b-collapse>
+          </div>
+          <div class="col">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <b-button v-bind="attrs" v-on="on" class="btn btn-secondary" aria-expanded="true" v-b-toggle.accordion-2>
+                  <v-icon class="icon" left>mdi-microsoft-windows</v-icon>
+                  Windows
+                </b-button>
+              </template>
+              <span>{{ tooltip }}</span>
+            </v-tooltip>
+            <b-collapse id="accordion-2" v-b-visible accordion="accordion2" role="tabpanel">
+              <OSInstallation :instructions="windows" />
+            </b-collapse>
+          </div>
         </div>
-        <div class="col">
-          <v-tooltip right>
-          <template v-slot:activator="{ on, attrs }">
-            <b-button v-bind="attrs" v-on="on" class="btn btn-secondary" aria-expanded="true" v-b-toggle.accordion-2>
-              <v-icon class="icon" left>mdi-microsoft-windows</v-icon>
-              Windows
-            </b-button>
-          </template>
-          <span>{{ tooltip }}</span>
-          </v-tooltip>
-          <b-collapse id="accordion-2" v-b-visible accordion="accordion2" role="tabpanel">
-            <OSInstallation :instructions="windows" />
-          </b-collapse>
-        </div>
-        </div>
-
       </b-card-text>
     </b-card-body>
   </b-card>
@@ -48,10 +44,11 @@
 <script>
 import OSInstallation from '../Cluster/OSInstallation'
 import KubeConfig from '@/components/Profile/KubeConfig'
+import Download from '@/components/Profile/Download'
 
 export default {
   name: 'KubeInstallation',
-  components: { OSInstallation, KubeConfig },
+  components: { OSInstallation, KubeConfig, Download },
 
   data () {
     return {
@@ -75,9 +72,6 @@ export default {
   }
   .icon {
     color: #F1F8E9;
-  }
-  .content {
-    max-width: 80%;
   }
 
 </style>

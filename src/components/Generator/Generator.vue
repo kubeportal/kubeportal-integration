@@ -13,7 +13,6 @@
         <v-icon class="icon" left>mdi-arrow-decision-outline</v-icon>
           <div class="title"><small>Ingress</small></div>
       </v-tab>
-
       <v-tab-item class="items">
         <v-card flat>
           <v-card-text>
@@ -89,5 +88,6 @@ export default {
   .active {
     background-color: #AED581 !important;
   }
+
 
 </style>
