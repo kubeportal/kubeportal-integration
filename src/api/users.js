@@ -6,55 +6,64 @@ const users_container = {
     namespaced: true,
 
     state: {
-      current_user_id: null,
-      current_user_firstname: '',
-      current_user_details: {},
-      current_user_webapps: [],
+      user_id: null,
+      user_firstname: '',
+      user_token: '',
+      user_details: {},
+      user_webapps: [],
       is_authenticated: false
     },
 
     getters: {
-      get_current_user_details (state) { return state.current_user_details },
-      get_current_user_id (state) { return state.current_user_id },
+      get_user_details (state) { return state.user_details },
+      get_user_id (state) { return state.user_id },
       get_is_authenticated (state) { return state.is_authenticated },
-      get_current_user_firstname (state) { return state.current_user_firstname },
-      get_current_user_webapps (state) { return state.current_user_webapps }
+      get_user_firstname (state) { return state.user_firstname },
+      get_user_webapps (state) { return state.user_webapps },
+      get_user_token (state) { return state.user_token }
     },
 
     mutations: {
       set_is_authenticated (state, status) { state.is_authenticated = status },
-      set_current_user_id (state, id) { state.current_user_id = id },
-      set_current_user_firstname (state, name) { state.current_user_firstname = name },
-      set_user_details (state, current_user_details ) { state.current_user_details = current_user_details },
-      set_current_user_webapps (state, webapps) { state.current_user_webapps = webapps }
+      set_user_id (state, id) { state.user_id = id },
+      set_user_firstname (state, name) { state.user_firstname = name },
+      set_user_details (state, user_details) { state.user_details = user_details },
+      set_user_webapps (state, webapps) { state.user_webapps = webapps },
+      set_user_token (state, token) { state.user_token = token }
     },
 
     actions: {
-      async get_current_user_details (context, field) {
-        const response = await backend.readByField('/users', field)
-        console.log('set user details')
-        context.commit('set_user_details', response)
+      async get_user_details (context, field) {
+        const response = await backend.readByField('/users', field, this.state.user_token)
+        console.log(response)
+        context.commit('set_user_details', response.data)
         return response
       },
       async post_login_data (context, request_body) {
-        const response = await backend.create('/login', request_body)
-        console.log('post login data response:')
-        console.log(response)
-        context.commit('set_current_user_id', response['id'])
-        context.commit('set_current_user_firstname', response['firstname'])
+        const response = await backend.create('/login', request_body, '')
+        context.commit('set_user_id', response.data['id'])
+        context.commit('set_user_firstname', response.data['firstname'])
+        context.commit('set_user_token', response.data['token'])
         return response
       },
       async authorize_google_user (context, auth_response) {
         const response = await backend.create('/google_login', auth_response)
         return response
       },
-      async get_current_user_webapps (context) {
-        const response = await backend.readByFieldRessource('/users', context.state.current_user_id, 'webapps')
-        context.commit('set_current_user_webapps', response)
+      async get_user_webapps (context) {
+        console.log('get user webapps')
+        const response = await backend.readByFieldRessource('/users', context.state.user_id, 'webapps', this.state.user_token)
+        console.log(response.data)
+        context.commit('set_user_webapps', response.data)
+        return response
+      },
+      async update_user (context, item) {
+        const response = await backend.updateById('/users', context.state.user_id, 'webapps', this.state.user_token)
+        context.commit('set_user_details', response.data)
         return response
       }
     }
-  }
+  },
 }
 
 export default users_container
