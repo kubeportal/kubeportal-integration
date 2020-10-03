@@ -1,11 +1,15 @@
 <template>
-  <b-card class="kubeinstallation">
+  <b-card>
     <b-card-header>Using Kubectl</b-card-header>
-    <b-card-body class="kubeinstallation">
+    <b-card-body>
       <b-card-text>
+        <div class="container-fluid">
+        <button><v-icon>mdi-download</v-icon>config</button>
         <p class="content">This configuration file is needed for Kubernetes client tools on your computer.
           It contains your personal access token.</p>
+        </div>
         <div class="row">
+          <div class="col">
           <v-tooltip right>
             <template v-slot:activator="{ on, attrs }">
               <b-button v-bind="attrs" v-on="on" class="btn btn-secondary" aria-expanded="true" v-b-toggle.accordion-1>
@@ -20,7 +24,7 @@
           <OSInstallation :instructions="macUnix" />
           </b-collapse>
         </div>
-        <div class="row" id="target">
+        <div class="col">
           <v-tooltip right>
           <template v-slot:activator="{ on, attrs }">
             <b-button v-bind="attrs" v-on="on" class="btn btn-secondary" aria-expanded="true" v-b-toggle.accordion-2>
@@ -34,18 +38,21 @@
             <OSInstallation :instructions="windows" />
           </b-collapse>
         </div>
+        </div>
+
       </b-card-text>
     </b-card-body>
   </b-card>
 </template>
 
 <script>
-import OSInstallation from './OSInstallation'
+import OSInstallation from '../Cluster/OSInstallation'
+import KubeConfig from '@/components/Profile/KubeConfig'
 
 export default {
   name: 'KubeInstallation',
-  components: { OSInstallation },
-  props: ['yamlfile'],
+  components: { OSInstallation, KubeConfig },
+
   data () {
     return {
       tooltip: 'You can test your installation by calling kubectl cluster-info.',
@@ -54,12 +61,10 @@ export default {
     }
   }
 }
+
 </script>
 
 <style scoped lang="scss">
-  .kubeinstallation {
-    width: 30vw
-  }
   .btn {
     margin: 2vw 0vw 1vw 0vw;
     color: floralwhite;
@@ -67,7 +72,6 @@ export default {
   }
   .btn:hover {
     background-color: #8BC34A !important;
-
   }
   .icon {
     color: #F1F8E9;
@@ -75,9 +79,5 @@ export default {
   .content {
     max-width: 80%;
   }
-  @media (max-device-width: 1519px) {
-    .kubeinstallation {
-      width: 80vw
-    }
-  }
+
 </style>
