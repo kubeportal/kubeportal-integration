@@ -5,7 +5,7 @@
         Kubeportal
       </b-card-header>
       <b-card-body>
-        <v-alert class="alert" dense outlined type="error" v-if="is_authenticated==='failed'"> Login Failed.</v-alert>
+        <v-alert class="alert" dense outlined type="error" v-if="is_authenticated !== 'true'">Login Failed.</v-alert>
         <b-card-text>
           <v-text-field label="user name" v-model="username" required></v-text-field>
           <v-text-field type="password" v-model="password" label="password" required></v-text-field>
@@ -29,9 +29,10 @@ export default {
   name: 'Login',
   data () {
     return {
+      is_authenticated: localStorage.getItem('is_authenticated'),
       username: '',
       password: '',
-      isSignIn: ''
+      isSignedIn: ''
     }
   },
   methods: {
@@ -48,7 +49,7 @@ export default {
         }
         const auth_response = googleUser.getAuthResponse()
         console.log('getAuthResponse', this.$gAuth.GoogleAuth.currentUser.get().getAuthResponse())
-        this.isSignIn = this.$gAuth.isAuthorized
+        this.isSignedIn = this.$gAuth.isAuthorized
         const response = await this.$store.dispatch('users/authorize_google_user', auth_response)
         await this.handle_login_response(response)
       } catch (error) {
@@ -57,24 +58,22 @@ export default {
     },
     async handle_login_response (user_data_response) {
       if (user_data_response.status === 200) {
-        console.log(user_data_response.data)
-        localStorage.setItem('api_token', user_data_response.data['token'])
         await this.$store.dispatch('users/get_user_details', user_data_response.data['id'])
         this.$store.commit('users/set_is_authenticated', 'true')
+        this.set_local_storage()
         await this.$router.push({ name: 'Kubeportal' })
       } else {
         console.log('login failed')
         this.$store.commit('users/set_is_authenticated', 'false')
         await this.$router.push({ name: 'Home' })
       }
-    }
-  },
-  computed: {
-    is_authenticated () {
-      return this.$store.getters['generator/get_is_authenticated']
+    },
+    set_local_storage () {
+      localStorage.setItem('user_token', this.$store.getters['users/get_user_token'])
+      localStorage.setItem('is_authenticated', this.$store.getters['users/get_is_authenticated'])
+      localStorage.setItem('user_id', this.$store.getters['users/get_user_id'])
     }
   }
-
 }
 </script>
 

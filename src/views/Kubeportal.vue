@@ -85,10 +85,10 @@
 
 <script>
 
-import Welcome from '@/components/Welcome'
-import Statistics from '@/components/Statistics'
-import Config from '@/components/Cluster/Cluster'
-import Generator from '@/components/Generator/Generator'
+import Welcome from '@/views/Welcome'
+import Statistics from '@/views/Statistics'
+import Config from '@/views/Cluster'
+import Generator from '@/views/Generator'
 import Profile from '@/components/Profile/Profile'
 import { showAt } from 'vue-breakpoints'
 
@@ -115,6 +115,7 @@ export default {
       this.$store.commit('users/set_token', '')
       this.$store.commit('users/set_webapps', [])
       this.$store.commit('users/set_is_authenticated', '')
+      localStorage.removeItem('api_token')
       this.$router.push({ name: 'Home' })
     },
     openAdmin () {
@@ -127,11 +128,11 @@ export default {
       return current_user['role'] === 'admin'
     }
   },
-  created () {
-    if(this.$store.getters['users/get_is_authenticated'] === '') {
-      this.$router.push({ name: 'Home' })
-    } else if (this.$store.getters['users/get_is_authenticated'] === true) {
+  mounted () {
+    if(localStorage.getItem('isAuthenticated') === 'true') {
       this.get_all_statistic_values()
+    } else {
+      this.$router.push({ name: 'Home' })
     }
   }
 }
