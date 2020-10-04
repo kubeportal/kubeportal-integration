@@ -29,19 +29,4 @@ const router = new Router({
   ]
 })
 
-// router.beforeEach((to, from, next) => {
-//   // to and from are both route objects. must call `next`.
-//   if(to.fullPath === '/kubeportal') {
-//     if(!store.state.jwt) {
-//       next('/login')
-//     }
-//   }
-//   if(to.fullPath === '/login') {
-//     if(store.state.jwt) {
-//       next('/kubeportal')
-//     }
-//   }
-//   next();
-// })
-
 export default router
