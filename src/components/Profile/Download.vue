@@ -1,13 +1,13 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div>
           <v-icon class="icon" left>mdi-download</v-icon>
           <a><b>kubectl config</b></a>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-7">
         <p class="content">{{ download_info }}</p>
       </div>
     </div>

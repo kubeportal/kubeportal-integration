@@ -4,6 +4,7 @@
       <div class="col-lg-3">
         <b-card class="profile">
           <b-card-header>
+            <EditModal class="float-right"></EditModal>
             <v-icon class="icon">mdi-account</v-icon>Profile</b-card-header>
             <b-card-body class="profile_body">
               <b-card-sub-title>Firstname</b-card-sub-title>
@@ -17,11 +18,10 @@
               <b-card-sub-title>Cluster access</b-card-sub-title>
               <b-card-text>{{ current_user['cluster_access'] }}</b-card-text>
           </b-card-body>
-          <EditModal class="float-right"></EditModal>
         </b-card>
       </div>
-        <div class="col-lg-8">
-          <KubeInstallation />
+        <div class="col-lg-7">
+          <KubeInstallation class="installation" />
         </div>
     </div>
   </div>
@@ -30,8 +30,8 @@
 <script>
 
 import ContentCardHeader from '@/components/ContentCardHeader'
-import KubeConfig from '@/components/Profile/KubeConfig'
-import KubeInstallation from '@/components/Profile/KubeInstallation'
+import KubeConfig from '@/components/KubeConfig/KubeConfig'
+import KubeInstallation from '@/components/KubeConfig/KubeInstallation'
 import EditModal from '@/components/Profile/EditModal'
 
 export default {
@@ -49,6 +49,7 @@ export default {
   .profile {
     background: rgba(255, 255, 255, 1);
     min-width: 180px;
+    height: 100%;
   }
   p, div>.card-header {
     color: black !important;
@@ -56,6 +57,9 @@ export default {
   .profile_body {
     margin-top: 3vh;
     min-width: 149px;
+  }
+  .installation {
+    height: 100%
   }
 
   @media (max-device-width : 767px) {
