@@ -69,7 +69,9 @@ export default {
       }
     },
     set_local_storage () {
+      console.log(`set local storage. authenticated: ${this.$store.getters['users/get_is_authenticated']}`)
       localStorage.setItem('user_token', this.$store.getters['users/get_user_token'])
+      localStorage.setItem('firstname', this.$store.getters['users/get_user_firstname'])
       localStorage.setItem('is_authenticated', this.$store.getters['users/get_is_authenticated'])
       localStorage.setItem('user_id', this.$store.getters['users/get_user_id'])
     }

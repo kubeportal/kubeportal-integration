@@ -15,7 +15,7 @@ export default {
   components: { WebAppContainer },
   data () {
     return {
-      current_user_firstname: this.$store.getters['users/get_user_firstname']
+      current_user_firstname: localStorage.getItem('firstname')
     }
   },
   methods: {

@@ -128,9 +128,14 @@ export default {
       return current_user['role'] === 'admin'
     }
   },
-  mounted () {
-    if(localStorage.getItem('isAuthenticated') === 'true') {
-      this.get_all_statistic_values()
+  async mounted () {
+    if(localStorage.getItem('is_authenticated') === 'true') {
+      let user_id = this.$store.getters['users/get_user_id']
+      if (user_id === undefined) {
+        await this.$store.dispatch('users/get_user_details', localStorage.getItem('user_id'))
+        this.$store.commit('users/set_user_firstname', localStorage.getItem('firstname'))
+        this.$store.commit('users/set_is_authenticated', 'true')
+      }
     } else {
       this.$router.push({ name: 'Home' })
     }

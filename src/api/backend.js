@@ -49,7 +49,6 @@ export async function readByFieldRessource (collection, id, ressource, token) {
   axiosInstance.defaults.headers.common['Authorization'] = token
   try {
     const response = await axiosInstance.get(`${collection}/${id}/${ressource}`)
-    console.log(`READ ${collection}/${id}/${ressource}`)
     return response
   } catch (e) {
     console.log(e)
