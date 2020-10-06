@@ -8,6 +8,12 @@
         </show-at>
       </v-tab>
       <v-tab>
+        <v-icon class="icon" left>mdi-account</v-icon>
+        <show-at breakpoint="mediumAndAbove">
+          <div class="title"><small>Profile</small></div>
+        </show-at>
+      </v-tab>
+      <v-tab>
         <v-icon class="icon" left>mdi-file-document-outline</v-icon>
         <show-at breakpoint="mediumAndAbove">
           <div class="title"><small>Cluster</small></div>
@@ -31,12 +37,6 @@
           <div class="title"><small>Admin</small></div>
         </show-at>
       </v-tab>
-      <v-tab>
-        <v-icon class="icon" left>mdi-cog-outline</v-icon>
-        <show-at breakpoint="mediumAndAbove">
-          <div class="title"><small>Settings</small></div>
-        </show-at>
-      </v-tab>
       <v-tab @click="logout">
         <v-icon class="icon" left>mdi-logout-variant</v-icon>
         <show-at breakpoint="mediumAndAbove">
@@ -51,7 +51,13 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-
+      <v-tab-item class="items">
+        <v-card flat>
+          <v-card-text>
+            <Profile />
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
       <v-tab-item class="items">
         <v-card flat>
           <v-card-text>
@@ -79,19 +85,20 @@
 
 <script>
 
-import Welcome from '@/components/Welcome'
-import Statistics from '@/components/Statistics'
-import Config from '@/components/Cluster/Config'
-import Generator from '@/components/Generator/Generator'
+import Welcome from '@/views/Welcome'
+import Statistics from '@/views/Statistics'
+import Config from '@/views/Cluster'
+import Generator from '@/views/Generator'
+import Profile from '@/components/Profile/Profile'
 import { showAt } from 'vue-breakpoints'
 
 export default {
   name: 'App',
 
-  components: { Statistics, Welcome, Config, showAt, Generator },
+  components: { Statistics, Welcome, Config, Generator, Profile, showAt },
   data () {
     return {
-      statistics: this.$store.getters['statistics/get_statistics']
+      statistics: this.$store.getters['statistics/get_cluster_info']
     }
   },
   methods: {
@@ -99,15 +106,16 @@ export default {
       this.statistics.map(this.request_stat_value)
     },
     async request_stat_value (stat) {
-      let request_stat = stat.replace(/_/i, '')
-      await this.$store.dispatch('statistics/get_statistic_stat', request_stat)
+      const token = this.$store.getters['users/get_user_token']
+      await this.$store.dispatch('statistics/get_cluster_info', stat, token)
     },
     logout () {
       this.$store.commit('users/set_user', {})
-      this.$store.commit('statistics/update_statistics', [])
+      this.$store.commit('statistics/update_cluster_info', [])
       this.$store.commit('users/set_token', '')
-      this.$store.commit('statistics/update_webapps', [])
+      this.$store.commit('users/set_webapps', [])
       this.$store.commit('users/set_is_authenticated', '')
+      localStorage.removeItem('api_token')
       this.$router.push({ name: 'Home' })
     },
     openAdmin () {
@@ -116,15 +124,20 @@ export default {
   },
   computed: {
     userIsAdmin () {
-      let current_user = this.$store.getters['users/get_current_user']
+      let current_user = this.$store.getters['users/get_current_user_details']
       return current_user['role'] === 'admin'
     }
   },
-  created () {
-    if(this.$store.getters['users/get_is_authenticated'] === '') {
+  async mounted () {
+    if(localStorage.getItem('is_authenticated') === 'true') {
+      let user_id = this.$store.getters['users/get_user_id']
+      if (user_id === undefined) {
+        await this.$store.dispatch('users/get_user_details', localStorage.getItem('user_id'))
+        this.$store.commit('users/set_user_firstname', localStorage.getItem('firstname'))
+        this.$store.commit('users/set_is_authenticated', 'true')
+      }
+    } else {
       this.$router.push({ name: 'Home' })
-    } else if (this.$store.getters['users/get_is_authenticated'] === true) {
-      this.get_all_statistic_values()
     }
   }
 }

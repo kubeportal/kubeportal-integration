@@ -13,7 +13,6 @@
         <v-icon class="icon" left>mdi-arrow-decision-outline</v-icon>
           <div class="title"><small>Ingress</small></div>
       </v-tab>
-
       <v-tab-item class="items">
         <v-card flat>
           <v-card-text>
@@ -40,10 +39,10 @@
 </template>
 
 <script>
-import Deployment from './Deployment'
-import Service from './Service'
-import Ingress from './Ingress'
-import EventBus from '../../plugins/eventbus.js'
+import Deployment from '../components/Generator/Deployment'
+import Service from '../components/Generator/Service'
+import Ingress from '../components/Generator/Ingress'
+import EventBus from '../plugins/eventbus.js'
 
 export default {
   name: 'Generator',
@@ -89,5 +88,6 @@ export default {
   .active {
     background-color: #AED581 !important;
   }
+
 
 </style>
