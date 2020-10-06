@@ -1,28 +1,21 @@
 <template>
-  <div>
-    <ContentCardHeader class="wrapper">
       <b-card bg-variant="light" class="maincard">
-        <b-card-body>
-          <b-card-text>
+          <b-card-header>
             Hello: {{ this.current_user_firstname }} !
-          </b-card-text>
-        </b-card-body>
+          </b-card-header>
+        <WebAppContainer />
       </b-card>
-    </ContentCardHeader>
-   <WebAppContainer />
-  </div>
 </template>
 
 <script>
-import WebAppContainer from './WebAppContainer'
-import ContentCardHeader from "@/components/ContentCardHeader";
+import WebAppContainer from '../components/WebAppContainer'
 
 export default {
   name: 'Welcome',
-  components: { ContentCardHeader, WebAppContainer },
+  components: { WebAppContainer },
   data () {
     return {
-      current_user_firstname: this.$store.getters['users/get_current_user_firstname']
+      current_user_firstname: localStorage.getItem('firstname')
     }
   },
   methods: {
@@ -45,7 +38,7 @@ export default {
     color: black !important
   }
   .wrapper {
-    height: 20vh !important;
+    height: auto !important;
   }
 
 </style>
