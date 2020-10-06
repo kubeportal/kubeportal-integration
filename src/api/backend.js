@@ -1,4 +1,6 @@
 import axios from 'axios'
+import to from 'await-to-js'
+import * as user_store from './users'
 
 const API_BASE_URL = setBaseURLWithDefaultOrEnvValue()
 
@@ -18,53 +20,47 @@ const config = {
   headers: {
     'Content-Type': 'application/json'
   },
-  withCredentials: true
+  withCredentials: true,
+  Authorization:  `Bearer ${user_store.default.module.getters['users/get_user_token']}`
 }
 
 export const axiosInstance = axios.create(config)
 
-export async function read (collection, token) {
-  axiosInstance.defaults.headers.common['Authorization'] = token
-  try {
-    const response = await axiosInstance.get(collection)
-    console.log(`READ ${collection}`)
-    return response
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-export async function readByField (collection, id, token) {
-  axiosInstance.defaults.headers.common['Authorization'] = token
-  try {
-    const response = await axiosInstance.get(`${collection}/${id}`)
-    console.log(`READ ${collection}/${id}`)
-    return response
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-export async function readByFieldRessource (collection, id, ressource, token) {
-  axiosInstance.defaults.headers.common['Authorization'] = token
-  try {
-    const response = await axiosInstance.get(`${collection}/${id}/${ressource}`)
-    return response
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-export async function create (collection, payload, token) {
-  axiosInstance.defaults.headers.common['Authorization'] = token
-  const response = await axiosInstance.post(collection, payload)
-  console.log(response)
+export async function read (collection) {
+  console.log(axiosInstance.defaults.headers.common['Authorization'])
+  let error, response
+  [error, response] = await to(axiosInstance.get(collection))
+  error ? console.log(error) : console.log(response)
   return response
 }
 
-export async function updateById (collection, payload, token) {
-  axiosInstance.defaults.headers.common['Authorization'] = token
-  const response = await axiosInstance.patch(collection, payload)
-  console.log(response)
+export async function readByField (collection, id) {
+  let error, response
+  [error, response] = await to(axiosInstance.get(`${collection}/${id}`))
+  error ? console.log(error) : console.log(response)
+  return response
+}
+
+export async function readByFieldRessource (collection, id, ressource) {
+  let error, response
+  [error, response] = await to(axiosInstance.get(`${collection}/${id}/${ressource}`))
+  error ? console.log(error) : console.log(response)
+  return response
+}
+
+export async function create (collection, payload) {
+  if(collection === 'login') {
+    delete axiosInstance.defaults.headers.common['Authorization']
+  }
+  let error, response
+  [error, response] = await to(axiosInstance.post(collection, payload))
+  error ? console.log(error) : console.log(response)
+  return response
+}
+
+export async function updateById (collection, payload) {
+  let error, response
+  [error, response] = await axiosInstance.patch(collection, payload)
+  error ? console.log(error) : console.log(response)
   return response
 }

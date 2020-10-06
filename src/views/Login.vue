@@ -38,8 +38,16 @@ export default {
   methods: {
     async login () {
       const request_body = { username: this.username, password: this.password }
-      const user_data_response = await this.$store.dispatch('users/post_login_data', request_body)
-      await this.handle_login_response(user_data_response)
+      const response = await this.$store.dispatch('users/post_login_data', request_body)
+      if (response.status === 200) {
+        this.set_local_storage()
+        await this.$store.dispatch('users/get_user_details', response.data['id'])
+        await this.$router.push({ name: 'Kubeportal' })
+      } else {
+        console.log('login failed')
+        this.$store.commit('users/set_is_authenticated', 'false')
+        await this.$router.push({ name: 'Home' })
+      }
     },
     async signInWithGoogle () {
       try {
@@ -54,18 +62,6 @@ export default {
         await this.handle_login_response(response)
       } catch (error) {
         console.log(error)
-      }
-    },
-    async handle_login_response (user_data_response) {
-      if (user_data_response.status === 200) {
-        await this.$store.dispatch('users/get_user_details', user_data_response.data['id'])
-        this.$store.commit('users/set_is_authenticated', 'true')
-        this.set_local_storage()
-        await this.$router.push({ name: 'Kubeportal' })
-      } else {
-        console.log('login failed')
-        this.$store.commit('users/set_is_authenticated', 'false')
-        await this.$router.push({ name: 'Home' })
       }
     },
     set_local_storage () {

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import * as backend from '@/api/backend'
-import * as users_container from "@/api/users";
 
 const statistics = {
   module: {
@@ -23,13 +22,11 @@ const statistics = {
     actions: {
       async get_cluster_info (context, field, token) {
         const infos = await backend.readByField('/cluster', field, token)
-        console.log(infos)
         context.commit('update_cluster_info', infos.data)
         return infos
       }
     },
     mounted () {
-      console.log('LOCALSTORAGE')
       console.log(localStorage.getItem('api_token'))
     }
   }

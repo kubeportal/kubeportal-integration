@@ -106,8 +106,7 @@ export default {
       this.statistics.map(this.request_stat_value)
     },
     async request_stat_value (stat) {
-      const token = this.$store.getters['users/get_user_token']
-      await this.$store.dispatch('statistics/get_cluster_info', stat, token)
+      await this.$store.dispatch('statistics/get_cluster_info', stat, localStorage.getItem('user_token'))
     },
     logout () {
       this.$store.commit('users/set_user', {})
@@ -130,14 +129,14 @@ export default {
   },
   async mounted () {
     if(localStorage.getItem('is_authenticated') === 'true') {
-      let user_id = this.$store.getters['users/get_user_id']
+      const user_id = this.$store.getters['users/get_user_id']
       if (user_id === undefined) {
         await this.$store.dispatch('users/get_user_details', localStorage.getItem('user_id'))
         this.$store.commit('users/set_user_firstname', localStorage.getItem('firstname'))
         this.$store.commit('users/set_is_authenticated', 'true')
       }
     } else {
-      this.$router.push({ name: 'Home' })
+      await this.$router.push({ name: 'Home' })
     }
   }
 }

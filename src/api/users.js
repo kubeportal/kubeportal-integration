@@ -34,13 +34,12 @@ const users_container = {
 
     actions: {
       async get_user_details (context, field) {
-        const response = await backend.readByField('/users', field, this.state.user_token)
-        console.log(response)
+        const response = await backend.readByField('/users', field)
         context.commit('set_user_details', response.data)
         return response
       },
       async post_login_data (context, request_body) {
-        const response = await backend.create('/login', request_body, '')
+        const response = await backend.create('/login', request_body)
         context.commit('set_user_id', response.data['id'])
         context.commit('set_user_firstname', response.data['firstname'])
         context.commit('set_user_token', response.data['token'])
@@ -48,17 +47,17 @@ const users_container = {
       },
       async authorize_google_user (context, auth_response) {
         const response = await backend.create('/google_login', auth_response)
+        // @ TODO
         return response
       },
       async get_user_webapps (context) {
         console.log('get user webapps')
-        const response = await backend.readByFieldRessource('/users', context.state.user_id, 'webapps', this.state.user_token)
-        console.log(response.data)
+        const response = await backend.readByFieldRessource('/users', context.state.user_id, 'webapps')
         context.commit('set_user_webapps', response.data)
         return response
       },
       async update_user (context, item) {
-        const response = await backend.updateById('/users', context.state.user_id, 'webapps', this.state.user_token)
+        const response = await backend.updateById('/users', context.state.user_id, 'webapps')
         context.commit('set_user_details', response.data)
         return response
       }
