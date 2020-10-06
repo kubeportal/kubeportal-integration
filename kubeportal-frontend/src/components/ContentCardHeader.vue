@@ -1,7 +1,6 @@
 <template>
-  <v-parallax class="wrapper" src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg">
-    <v-row
-      align="center">
+  <v-parallax src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg">
+    <v-row>
       <v-col>
         <slot />
       </v-col>
@@ -16,5 +15,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 </style>

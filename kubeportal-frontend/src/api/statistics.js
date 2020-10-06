@@ -1,38 +1,36 @@
 import Vue from 'vue'
 import * as backend from '@/api/backend'
+import * as users_container from "@/api/users";
 
 const statistics = {
   module: {
     namespaced: true,
 
     state: {
-      api_statistics: ['kubernetes', 'api_server', 'cluster_nodes', 'cpu_cores', 'main_memory', 'deployed_pods', 'allocated_volumes', 'portal_users', 'kubeportal'],
-      statistics : [],
-      webapps: []
+      cluster_request_info: ['portal_user_count', 'portal_version', 'k8s_version', 'k8s_node_count', 'k8s_cpu_count', 'k8s_mem_sum', 'k8s_pod_count', 'k8s_volume_count', 'k8s_apiserver_url', 'k8s_cluster_name'],
+      cluster_info: []
     },
 
     getters: {
-      get_api_statistics (state) { return state.api_statistics },
-      get_statistics (state) { return state.statistics },
-      get_webapps (state) { return state.webapps }
+      get_cluster_request_info (state) { return state.cluster_request_info },
+      get_cluster_info (state) { return state.cluster_info }
     },
 
     mutations: {
-      update_statistics (state, stat) { state.statistics.push(stat) },
-      update_webapps (state, webapps) { state.webapps = webapps }
+      update_cluster_info (state, info) { state.cluster_info.push(info) }
     },
 
     actions: {
-      async get_statistics (context, field) {
-        const statistics = await backend.readByField('/statistics', field)
-        context.commit('update_statistics', statistics)
-        return statistics
-      },
-      async get_webapps (context) {
-        const webapps = await backend.read('/webapps')
-        context.commit('update_webapps', webapps.data)
-        return webapps
+      async get_cluster_info (context, field, token) {
+        const infos = await backend.readByField('/cluster', field, token)
+        console.log(infos)
+        context.commit('update_cluster_info', infos.data)
+        return infos
       }
+    },
+    mounted () {
+      console.log('LOCALSTORAGE')
+      console.log(localStorage.getItem('api_token'))
     }
   }
 }

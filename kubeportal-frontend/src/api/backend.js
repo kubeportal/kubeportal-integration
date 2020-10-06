@@ -3,12 +3,12 @@ import axios from 'axios'
 const API_BASE_URL = setBaseURLWithDefaultOrEnvValue()
 
 function canReadURLFromEnv () {
-  return !!process.env['API_BASE_URL']
+  return !!process.env['VUE_APP_BASE_URL']
 }
 
 export function setBaseURLWithDefaultOrEnvValue () {
-  const API_VERSION = 'v1.1.0'
-  const defaultUrl = 'http://localhost:8000'
+  const API_VERSION = 'v1.3.0'
+  const defaultUrl = 'http://127.0.0.1:8000/api'
   const baseUrl = canReadURLFromEnv() ? process.env['VUE_APP_BASE_URL'] : defaultUrl
   return `${baseUrl}/${API_VERSION}`
 }
@@ -17,39 +17,54 @@ const config = {
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true
 }
 
 export const axiosInstance = axios.create(config)
 
-export async function read (collection) {
-  //axiosInstance.defaults.headers.common['Authorization'] = `token ${jwt}`
+export async function read (collection, token) {
+  axiosInstance.defaults.headers.common['Authorization'] = token
   try {
     const response = await axiosInstance.get(collection)
+    console.log(`READ ${collection}`)
     return response
   } catch (e) {
     console.log(e)
   }
 }
 
-export async function readByField (collection, id) {
-  //axiosInstance.defaults.headers.common['Authorization'] = `token ${jwt}`
+export async function readByField (collection, id, token) {
+  axiosInstance.defaults.headers.common['Authorization'] = token
   try {
     const response = await axiosInstance.get(`${collection}/${id}`)
-    return response.data
+    console.log(`READ ${collection}/${id}`)
+    return response
   } catch (e) {
     console.log(e)
   }
 }
 
-export async function create (collection, payload) {
-  console.log('create')
+export async function readByFieldRessource (collection, id, ressource, token) {
+  axiosInstance.defaults.headers.common['Authorization'] = token
   try {
-    const response = await axiosInstance.post(collection, payload)
-    console.log(response)
+    const response = await axiosInstance.get(`${collection}/${id}/${ressource}`)
     return response
   } catch (e) {
     console.log(e)
-    return e
   }
+}
+
+export async function create (collection, payload, token) {
+  axiosInstance.defaults.headers.common['Authorization'] = token
+  const response = await axiosInstance.post(collection, payload)
+  console.log(response)
+  return response
+}
+
+export async function updateById (collection, payload, token) {
+  axiosInstance.defaults.headers.common['Authorization'] = token
+  const response = await axiosInstance.patch(collection, payload)
+  console.log(response)
+  return response
 }
