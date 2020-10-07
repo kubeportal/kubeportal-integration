@@ -67,7 +67,7 @@ class CorsMiddleware:
 
         if len(allowed_origins) == 0:
             # Ok, the user forgot to configure KUBEPORTAL_ALLOWED_URLS.
-            if settings.DEBUG == True: 
+            if settings.DEBUG == True:
                 # We call it the Kat-Hi mode. Just go on.
                 logger.warning("KUBEPORTAL_ALLOWED_URLS is not set. Overriding CORS due to DEBUG mode.")
             else:
@@ -85,7 +85,7 @@ class CorsMiddleware:
                 logger.error(f"Origin '{origin}' is not part of KUBEPORTAL_ALLOWED_URLS: {allowed_origins}. CORS headers cannot be set. This will break JavaScript API calls.")
                 return response
 
-        response["Access-Control-Allow-Origin"] = request.headers["Origin"]                    
+        response["Access-Control-Allow-Origin"] = request.headers["Origin"]
         response["Vary"] = "Origin"  # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
         response["Access-Control-Allow-Methods"] = "GET,HEAD,OPTIONS,POST,PUT"
         response["Access-Control-Allow-Credentials"] = "true"

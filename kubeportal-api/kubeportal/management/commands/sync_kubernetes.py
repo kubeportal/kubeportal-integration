@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand
 from colorama import init, Fore, Style
 
-import k8s_sync
-
+from k8s import k8s_sync
 
 class Command(BaseCommand):
     ''' Synchronize database with Kubernetes API server. '''

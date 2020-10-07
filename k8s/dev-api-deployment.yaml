@@ -1,0 +1,29 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: kubeportal-api-dev
+  namespace: sachs
+  labels:
+    app: kubeportal-api-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubeportal-api-dev
+  template:
+    metadata:
+      labels:
+        app: kubeportal-api-dev
+    spec:
+      containers:
+      - name: kubeportal-api-dev
+        image: registry.datexis.com/ksachs/kubeportal-staging:v1
+        ports:
+        - name: client-port
+          containerPort: 8000
+        envFrom:
+          - configMapRef:
+              name: kubeportal-dev-api-config
+      imagePullSecrets:
+      - name: private-registry-auth
+      schedulerName: default-scheduler
