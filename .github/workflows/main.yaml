@@ -1,0 +1,55 @@
+name: kubeportal-api-dev
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+defaults:
+  run:
+    working-directory: kubeportal-api
+
+jobs:
+  TEST-DEV-API:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+      - name: install dependencies
+        run: |
+          apt-get update && apt-get install -y gcc make libc-dev musl-dev libffi-dev libssl-dev libpcre3-dev
+          python -m pip install --upgrade pip
+          if [ -f requirements-prod.txt ]; then pip install --no-cache-dir -r requirements-prod.txt; fi
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.0.0
+        with:
+          minikube version: 'v1.6.2'
+          kubernetes version: 'v1.15.7'
+          github token: ${{ secrets.GITHUB_TOKEN }}
+      - name: run Unittest
+        run: ./manage.py test --configuration=Development
+
+  PUBLISH-DEV-API:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish to Docker registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: registry.datexis.com/ksachs/kubeportal-api-dev:latest
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSPHRASE }}
+          registry: registry.datexis.com
+          snapshot: true
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+      - name: Restart kubeportal-api-dev pod
+        run: kubectl -n sachs delete pod -l app=kubeportal-api-dev
