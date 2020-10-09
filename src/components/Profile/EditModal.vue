@@ -33,10 +33,12 @@ export default {
   },
   methods: {
     discard_changes () {
+      console.log('discard changes')
       this.dialog === false ? this.dialog = true : this.dialog = false
     },
     save_changes () {
-      this.$store.dispatch('users/update_user', { 'primary_email': this.primary_email })
+      console.log('save changes')
+      this.$store.dispatch('users/update_user', { 'id': this.current_user['id'], 'primary_email': this.primary_email })
       this.dialog === false ? this.dialog = true : this.dialog = false
     },
     change_primary_email (email) {

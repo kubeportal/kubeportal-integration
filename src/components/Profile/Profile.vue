@@ -13,8 +13,6 @@
               <b-card-text>{{ current_user['name'] }}</b-card-text>
               <b-card-sub-title>Primary Email</b-card-sub-title>
               <b-card-text>{{ current_user['primary_email'] }}</b-card-text>
-              <b-card-sub-title>User groups</b-card-sub-title>
-              <b-card-text>{{ current_user['user_groups'].join(', ') }}</b-card-text>
               <b-card-sub-title>Cluster access</b-card-sub-title>
               <b-card-text>{{ current_user['cluster_access'] }}</b-card-text>
           </b-card-body>
@@ -39,6 +37,8 @@ export default {
   components: { KubeInstallation, ContentCardHeader, KubeConfig, EditModal },
   computed: {
     current_user () {
+      console.log('current_user')
+      console.log(this.$store.getters['users/get_user_details'])
       return this.$store.getters['users/get_user_details']
     }
   }
