@@ -31,7 +31,7 @@
           <div class="title"><small>Generator</small></div>
         </show-at>
       </v-tab>
-      <v-tab @click="openAdmin">
+      <v-tab v-if="userIsAdmin" @click="openAdmin">
         <v-icon class="icon" left>mdi-tools</v-icon>
         <show-at breakpoint="mediumAndAbove">
           <div class="title"><small>Admin</small></div>
@@ -103,18 +103,22 @@ export default {
   },
   methods: {
     get_all_statistic_values () {
-      this.statistics.map(this.request_stat_value)
+      this.statistics.map(this.request_cluster_info)
     },
-    async request_stat_value (stat) {
-      await this.$store.dispatch('statistics/get_cluster_info', stat, localStorage.getItem('user_token'))
+    async request_cluster_info (cluster_info) {
+      await this.$store.dispatch('statistics/get_cluster_info', cluster_info)
     },
     logout () {
-      this.$store.commit('users/set_user', {})
-      this.$store.commit('statistics/update_cluster_info', [])
+      this.$store.commit('users/set_user_details', {})
       this.$store.commit('users/set_token', '')
       this.$store.commit('users/set_webapps', [])
       this.$store.commit('users/set_is_authenticated', '')
-      localStorage.removeItem('api_token')
+      this.$store.commit('statistics/update_cluster_info', [])
+      localStorage.removeItem('firstname')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('user_id')
+      localStorage.removeItem('is_authenticated')
+      localStorage.removeItem('csrf_token')
       this.$router.push({ name: 'Home' })
     },
     openAdmin () {
@@ -123,8 +127,10 @@ export default {
   },
   computed: {
     userIsAdmin () {
-      let current_user = this.$store.getters['users/get_current_user_details']
-      return current_user['role'] === 'admin'
+      let current_user = this.$store.getters['users/get_user_details']
+      console.log('current user')
+      console.log(current_user)
+      return current_user['admin']
     }
   },
   async mounted () {
@@ -134,6 +140,7 @@ export default {
         await this.$store.dispatch('users/get_user_details', localStorage.getItem('user_id'))
         this.$store.commit('users/set_user_firstname', localStorage.getItem('firstname'))
         this.$store.commit('users/set_is_authenticated', 'true')
+        this.get_all_statistic_values()
       }
     } else {
       await this.$router.push({ name: 'Home' })
