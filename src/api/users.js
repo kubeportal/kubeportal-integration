@@ -34,7 +34,7 @@ const users_container = {
 
     actions: {
       async get_user_details (context, id) {
-        const response = await backend.readByID('/users', id)
+        const response = await backend.read(`/users/${id}/`)
         response !== undefined ? context.commit('set_user_details', response.data) : console.log('login failed')
         return response
       },
@@ -51,12 +51,12 @@ const users_container = {
         return response
       },
       async get_user_webapps (context) {
-        const response = await backend.readByIDAndResource('/users', context.state.user_id, 'webapps')
+        const response = await backend.read(`/users/${context.state.user_id}/webapps/`)
         response !== undefined ? context.commit('set_user_webapps', response.data) : console.log('no webapps found')
         return response
       },
       async get_user_groups (context) {
-        const response = await backend.readByIDAndResource('/users', context.state.user_id, 'groups')
+        const response = await backend.read(`/users/${context.state.user_id}/groups/`)
         console.log('usergroups')
         for(let group of response.data) {
           context.state.user_groups.push(group)
@@ -64,7 +64,7 @@ const users_container = {
         return response
       },
       async update_user (context, payload) {
-        const response = await backend.updateById('/users', context.state.user_id, payload)
+        const response = await backend.update(`/users/${context.state.user_id}/`, payload)
         context.commit('set_user_details', response.data)
         return response
       }

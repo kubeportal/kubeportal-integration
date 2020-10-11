@@ -22,7 +22,7 @@ const statistics = {
 
     actions: {
       async get_cluster_info (context, field) {
-        const infos = await backend.readByID('/cluster', field)
+        const infos = await backend.read(`/cluster/${field}/`)
         context.commit('update_cluster_info', infos.data)
         return infos
       }
