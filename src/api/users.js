@@ -9,6 +9,7 @@ const users_container = {
       user_id: null,
       user_firstname: '',
       access_token: '',
+      is_authenticated: '',
       user_details: {},
       user_webapps: [],
       user_groups: {}
@@ -19,7 +20,8 @@ const users_container = {
       get_user_id (state) { return state.user_id },
       get_user_firstname (state) { return state.user_firstname },
       get_user_webapps (state) { return state.user_webapps },
-      get_access_token (state) { return state.access_token }
+      get_access_token (state) { return state.access_token },
+      get_is_authenticated (state) { return state.is_authenticated }
     },
 
     mutations: {
@@ -27,7 +29,8 @@ const users_container = {
       set_user_firstname (state, name) { state.user_firstname = name },
       set_user_details (state, user_details) { state.user_details = user_details },
       set_user_webapps (state, webapps) { state.user_webapps = webapps },
-      set_access_token (state, token) { state.access_token = token }
+      set_access_token (state, token) { state.access_token = token },
+      set_is_authenticated (state, is_authenticated) { state.is_authenticated = is_authenticated }
     },
 
     actions: {

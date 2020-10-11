@@ -1,20 +1,21 @@
 import axios from 'axios'
 import to from 'await-to-js'
+import store from '../store.js'
 
 function canReadURLFromEnv () {
   return !!process.env['VUE_APP_BASE_URL']
 }
 
-function canReadTokenFromLocalStorage (item) {
-  return !!localStorage.getItem(item)
+function canReadTokenFromVuex (item) {
+  return !!store.getters[`api/${item}`]
 }
 
 function setAuthorizationHeader () {
-  return canReadTokenFromLocalStorage('access_token') ? `Bearer ${localStorage.getItem('access_token')}` : undefined
+  return canReadTokenFromVuex('access_token') ? `Bearer ${store.getters['users/access_token']}` : undefined
 }
 
 function setCSRFToken () {
-  return canReadTokenFromLocalStorage('csrf_token') ? localStorage.getItem('csrf_token') : undefined
+  return canReadTokenFromVuex('csrf_token') ? store.getters['api/get_csrf_token'] : undefined
 }
 
 export function setBaseURLWithDefaultOrEnvValue () {
@@ -49,7 +50,6 @@ export async function read (collection) {
   [error, response] = await to(axiosInstance.get(collection))
   response === undefined ? console.log(error.message) : console.log(response)
   return response
-
 }
 
 export async function readByField (collection, field) {

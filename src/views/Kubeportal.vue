@@ -110,15 +110,13 @@ export default {
     },
     logout () {
       this.$store.commit('users/set_user_details', {})
-      this.$store.commit('users/set_token', '')
       this.$store.commit('users/set_webapps', [])
       this.$store.commit('users/set_is_authenticated', '')
+      this.$store.commit('users/set_access_token', '')
+      this.$store.commit('users/set_user_firstname', '')
       this.$store.commit('statistics/update_cluster_info', [])
-      localStorage.removeItem('firstname')
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('user_id')
-      localStorage.removeItem('is_authenticated')
-      localStorage.removeItem('csrf_token')
+      this.$store.commit('api/csrf_token', '')
+
       this.$router.push({ name: 'Home' })
     },
     openAdmin () {
@@ -134,14 +132,14 @@ export default {
     }
   },
   async mounted () {
-    if(localStorage.getItem('is_authenticated') === 'true') {
+    if(this.$store.getters['users/get_is_authenticated'] === 'true') {
       const user_id = this.$store.getters['users/get_user_id']
-      if (user_id === undefined) {
+      /*if (user_id === undefined) {
         await this.$store.dispatch('users/get_user_details', localStorage.getItem('user_id'))
         this.$store.commit('users/set_user_firstname', localStorage.getItem('firstname'))
         this.$store.commit('users/set_is_authenticated', 'true')
         this.get_all_statistic_values()
-      }
+      }*/
     } else {
       await this.$router.push({ name: 'Home' })
     }
