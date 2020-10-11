@@ -7,7 +7,7 @@
       <v-card>
         <v-card-text>
           <v-card-title>change your primary email: {{ this.primary_email }}</v-card-title>
-          <Dropdown class="dropdown" />
+          <Dropdown @change_primary_email="change_primary_email" class="dropdown" />
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -42,7 +42,8 @@ export default {
       this.dialog === false ? this.dialog = true : this.dialog = false
     },
     change_primary_email (email) {
-      console.log('change email')
+      console.log('click')
+      console.log(email)
       this.primary_email = email
     }
   }

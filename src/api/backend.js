@@ -52,7 +52,7 @@ export async function read (collection) {
 
 }
 
-export async function readByField (collection, field) {
+export async function readByID (collection, field) {
   axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
   axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
   let error, response
@@ -83,7 +83,7 @@ export async function updateById (collection, id, payload) {
   axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
   axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
   let error, response
-  [error, response] = await axiosInstance.patch(`${collection}/${id}`, payload)
+  [error, response] = await axiosInstance.patch(`${collection}/${id}/`, payload)
   response === undefined ? console.log(error.message) : console.log(response)
   return response
 }

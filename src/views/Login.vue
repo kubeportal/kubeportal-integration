@@ -64,6 +64,7 @@ export default {
       } else if (response.status === 200) {
         this.set_local_storage()
         await this.$store.dispatch('users/get_user_details', response.data['id'])
+        await this.$store.dispatch('users/get_user_groups')
         await this.$router.push({ name: 'Kubeportal' })
       }
     },
@@ -75,7 +76,7 @@ export default {
       console.log(localStorage.getItem('access_token'))
     }
   },
-  async created () {
+  async mounted () {
     let response
     response = await backend.read('/api/')
     localStorage.setItem('csrf_token', response.data['csrf_token'])
