@@ -67,11 +67,12 @@ export default {
       } else if (response.status === 200) {
         this.$store.commit('users/set_is_authenticated', 'true')
         await this.$store.dispatch('users/get_user_details', response.data['id'])
+        await this.$store.dispatch('users/get_user_groups')
         await this.$router.push({ name: 'Kubeportal' })
       }
     }
   },
-  async created () {
+  async mounted () {
     let response
     response = await backend.read('/api/')
     this.$store.commit('api/set_csrf_token', response.data['csrf_token'])
