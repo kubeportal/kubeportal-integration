@@ -6,8 +6,8 @@
       </template>
       <v-card>
         <v-card-text>
-          <v-card-title>change your primary email: {{ this.primary_email }}</v-card-title>
-          <Dropdown @change_primary_email="change_primary_email" class="dropdown" />
+          <v-card-title>change your primary email: {{ this.current_primary_email }} </v-card-title>
+          <Dropdown :primary_email="selected_primary_email" @change_primary_email="change_primary_email" class="dropdown" />
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -27,24 +27,27 @@ export default {
   data () {
     return {
       dialog: false,
-      current_user: this.$store.getters['users/get_user_details'],
-      primary_email: this.$store.getters['users/get_user_details']['primary_email']
+      current_primary_email: this.$store.getters['users/get_user_details']['primary_email'],
+      selected_primary_email: this.$store.getters['users/get_user_details']['primary_email']
     }
+  },
+  computed: {
+    current_user () { return this.$store.getters['users/get_user_details'] }
   },
   methods: {
     discard_changes () {
       console.log('discard changes')
       this.dialog === false ? this.dialog = true : this.dialog = false
     },
-    save_changes () {
+    async save_changes () {
       console.log('save changes')
-      this.$store.dispatch('users/update_user', { 'id': this.current_user['id'], 'primary_email': this.primary_email })
+      const response = this.$store.dispatch('users/update_user', { 'id': this.current_user['id'], 'primary_email': this.selected_primary_email })
       this.dialog === false ? this.dialog = true : this.dialog = false
+      this.primary_email = this.$store.getters['users/get_user_details']['primary_email']
     },
     change_primary_email (email) {
-      console.log('click')
       console.log(email)
-      this.primary_email = email
+      this.selected_primary_email = email
     }
   }
 }

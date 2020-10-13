@@ -67,7 +67,7 @@ export async function update (relative_path, payload) {
   axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
   axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
   let error, response
-  [error, response] = await axiosInstance.patch(relative_path, payload)
+  [error, response] = await to(axiosInstance.patch(relative_path, payload))
   response === undefined ? console.log(error.message) : console.log(response)
   return response
 }

@@ -16,10 +16,10 @@
 <script>
 export default {
   name: 'Dropdown',
-  data () {
-    return {
-      primary_email: this.$store.getters['users/get_user_details']['primary_email'],
-      current_user_emails: this.$store.getters['users/get_user_details']['all_emails']
+  props: ['primary_email'],
+  computed: {
+    current_user_emails () {
+      return this.$store.getters['users/get_user_details']['all_emails']
     }
   }
 }
