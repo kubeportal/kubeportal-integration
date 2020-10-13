@@ -6,16 +6,18 @@ function canReadURLFromEnv () {
   return !!process.env['VUE_APP_BASE_URL']
 }
 
-function canReadTokenFromVuex (item) {
-  return !!store.getters[`api/${item}`]
+function readTokenFromVuex (item) {
+  return store.getters[`api/get_${item}`]
 }
 
 function setAuthorizationHeader () {
-  return canReadTokenFromVuex('access_token') ? `Bearer ${store.getters['users/access_token']}` : undefined
+  let tmp = readTokenFromVuex('access_token')
+  // eslint-disable-next-line
+  return !!tmp ? 'Bearer ' + tmp : undefined
 }
 
 function setCSRFToken () {
-  return canReadTokenFromVuex('csrf_token') ? store.getters['api/get_csrf_token'] : undefined
+  return readTokenFromVuex('csrf_token')
 }
 
 export function setBaseURLWithDefaultOrEnvValue () {

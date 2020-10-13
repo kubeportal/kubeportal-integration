@@ -109,13 +109,14 @@ export default {
       await this.$store.dispatch('statistics/get_cluster_info', cluster_info)
     },
     logout () {
-      this.$store.commit('users/set_user_details', {})
-      this.$store.commit('users/set_webapps', [])
-      this.$store.commit('users/set_is_authenticated', '')
-      this.$store.commit('users/set_access_token', '')
+      this.$store.commit('users/set_user_id', null)
       this.$store.commit('users/set_user_firstname', '')
-      this.$store.commit('statistics/update_cluster_info', [])
-      this.$store.commit('api/csrf_token', '')
+      this.$store.commit('users/set_is_authenticated', '')
+      this.$store.commit('users/set_user_details', {})
+      this.$store.commit('users/set_user_webapps', [])
+      this.$store.commit('statistics/set_cluster_info', [])
+      this.$store.commit('api/set_csrf_token', '')
+      this.$store.commit('api/set_access_token', '')
 
       this.$router.push({ name: 'Home' })
     },
@@ -138,7 +139,6 @@ export default {
         await this.$store.dispatch('users/get_user_details', localStorage.getItem('user_id'))
         this.$store.commit('users/set_user_firstname', localStorage.getItem('firstname'))
         this.$store.commit('users/set_is_authenticated', 'true')
-        this.get_all_statistic_values()
       }*/
     } else {
       await this.$router.push({ name: 'Home' })
