@@ -21,10 +21,11 @@ export default {
   methods: {
     get_cluster_infos () {
       let cluster_request = this.$store.getters['statistics/get_cluster_request_info']
-      cluster_request.map(info => this.request_infos(info))
+      this.request_infos(cluster_request)
+      //cluster_request.map(info => this.request_infos(info))
     },
-    async request_infos (info) {
-      await this.$store.dispatch('statistics/get_cluster_info', info)
+    async request_infos (infos) {
+      await this.$store.dispatch('statistics/get_cluster_infos', infos)
     }
   },
   created () {
