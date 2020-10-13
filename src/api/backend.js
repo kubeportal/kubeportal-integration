@@ -1,20 +1,23 @@
 import axios from 'axios'
 import to from 'await-to-js'
+import store from '../store.js'
 
 function canReadURLFromEnv () {
   return !!process.env['VUE_APP_BASE_URL']
 }
 
-function canReadTokenFromLocalStorage (item) {
-  return !!localStorage.getItem(item)
+function readTokenFromVuex (item) {
+  return store.getters[`api/get_${item}`]
 }
 
 function setAuthorizationHeader () {
-  return canReadTokenFromLocalStorage('access_token') ? `Bearer ${localStorage.getItem('access_token')}` : undefined
+  let tmp = readTokenFromVuex('access_token')
+  // eslint-disable-next-line
+  return !!tmp ? 'Bearer ' + tmp : undefined
 }
 
 function setCSRFToken () {
-  return canReadTokenFromLocalStorage('csrf_token') ? localStorage.getItem('csrf_token') : undefined
+  return readTokenFromVuex('csrf_token')
 }
 
 export function setBaseURLWithDefaultOrEnvValue () {
@@ -35,55 +38,36 @@ let config = {
 export let axiosInstance = axios.create(config)
 export let precall = axios.create(config) // only used for the initial request
 
-export async function read (collection) {
-  if(collection === '/api/') {
+export async function read (relative_path) {
+  if(relative_path === '/api/') {
     precall.defaults.baseURL = 'http://localhost:8000'
     let error, response
-    [error, response] = await to(precall.get(collection))
+    [error, response] = await to(precall.get(relative_path))
     response === undefined ? console.log(error.message) : console.log(response)
     return response
   }
   axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
   axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
   let error, response
-  [error, response] = await to(axiosInstance.get(collection))
-  response === undefined ? console.log(error.message) : console.log(response)
-  return response
-
-}
-
-export async function readByField (collection, field) {
-  axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
-  axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
-  let error, response
-  [error, response] = await to(axiosInstance.get(`${collection}/${field}/`))
+  [error, response] = await to(axiosInstance.get(relative_path))
   response === undefined ? console.log(error.message) : console.log(response)
   return response
 }
 
-export async function readByIDAndResource (collection, id, resource) {
+export async function create (relative_path, payload) {
   axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
   axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
   let error, response
-  [error, response] = await to(axiosInstance.get(`${collection}/${id}/${resource}/`))
+  [error, response] = await to(axiosInstance.post(relative_path, payload))
   response === undefined ? console.log(error.message) : console.log(response)
   return response
 }
 
-export async function create (collection, payload) {
+export async function update (relative_path, payload) {
   axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
   axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
   let error, response
-  [error, response] = await to(axiosInstance.post(collection, payload))
-  response === undefined ? console.log(error.message) : console.log(response)
-  return response
-}
-
-export async function updateById (collection, id, payload) {
-  axiosInstance.defaults.headers['Authorization'] = setAuthorizationHeader()
-  axiosInstance.defaults.headers['X-CSRFToken'] = setCSRFToken()
-  let error, response
-  [error, response] = await axiosInstance.patch(`${collection}/${id}`, payload)
+  [error, response] = await to(axiosInstance.patch(relative_path, payload))
   response === undefined ? console.log(error.message) : console.log(response)
   return response
 }

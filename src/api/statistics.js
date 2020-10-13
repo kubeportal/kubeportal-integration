@@ -17,12 +17,13 @@ const statistics = {
     },
 
     mutations: {
-      update_cluster_info (state, info) { state.cluster_info.push(info) }
+      update_cluster_info (state, info) { state.cluster_info.push(info) },
+      set_cluster_info (state, info) { state.cluster_info = info }
     },
 
     actions: {
       async get_cluster_info (context, field) {
-        const infos = await backend.readByField('/cluster', field)
+        const infos = await backend.read(`/cluster/${field}/`)
         context.commit('update_cluster_info', infos.data)
         return infos
       }
