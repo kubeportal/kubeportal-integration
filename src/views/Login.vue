@@ -41,6 +41,8 @@ export default {
     async login () {
       const request_body = { username: this.username, password: this.password }
       const response = await this.$store.dispatch('users/post_login_data', request_body)
+      console.log(response);
+
       await this.handle_login_response(response)
     },
     async signInWithGoogle () {
@@ -58,29 +60,23 @@ export default {
       await this.handle_login_response(response)
     },
     async handle_login_response (response) {
+      console.log(response)
       if(response === undefined) {
         this.is_authenticated = 'false'
         await this.$router.push({ name: 'Home' })
       } else if (response.status === 200) {
-        this.set_local_storage()
+        this.$store.commit('users/set_is_authenticated', 'true')
         await this.$store.dispatch('users/get_user_details', response.data['id'])
         await this.$store.dispatch('users/get_user_groups')
         await this.$router.push({ name: 'Kubeportal' })
       }
-    },
-    set_local_storage () {
-      localStorage.setItem('is_authenticated', 'true')
-      localStorage.setItem('access_token', this.$store.getters['users/get_access_token'])
-      localStorage.setItem('firstname', this.$store.getters['users/get_user_firstname'])
-      localStorage.setItem('user_id', this.$store.getters['users/get_user_id'])
-      console.log(localStorage.getItem('access_token'))
     }
   },
   async mounted () {
     let response
     response = await backend.read('/api/')
-    localStorage.setItem('csrf_token', response.data['csrf_token'])
-    localStorage.setItem('api_version', response.data['default_api_version'])
+    this.$store.commit('api/set_csrf_token', response.data['csrf_token'])
+    this.$store.commit('api/set_api_version', response.data['default_api_version'])
   }
 }
 </script>

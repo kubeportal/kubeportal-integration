@@ -17,7 +17,8 @@ const statistics = {
     },
 
     mutations: {
-      update_cluster_info (state, info) { state.cluster_info.push(info) }
+      update_cluster_info (state, info) { state.cluster_info.push(info) },
+      set_cluster_info (state, info) { state.cluster_info = info }
     },
 
     actions: {

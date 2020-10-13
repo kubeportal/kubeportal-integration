@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-import VuexPersist from 'vuex-persist'
+import VuexPersistence from 'vuex-persist'
 import store from './store'
 import logger from '@/plugins/logger'
 import vuetify from './plugins/vuetify'
@@ -15,15 +15,11 @@ const gauthOption = {
   prompt: 'select_account'
 }
 
-const vuexLocalStorage = new VuexPersist({
+const vuexLocalStorage = new VuexPersistence({
   key: 'vuex', // The key to store the state on in the storage provider.
-  storage: window.localStorage, // or window.sessionStorage or localForage
+  storage: window.localStorage // or window.sessionStorage or localForage
   // Function that passes the state and returns the state with only the objects you want to store.
-  reducer: state => ({
-    keepThisModule: state.keepThisModule,
-    keepThisModuleToo: state.keepThisModuleToo
-  })
-})
+}).plugin(store)
 
 Vue.use(GAuth, gauthOption)
 Vue.use(BootstrapVue)

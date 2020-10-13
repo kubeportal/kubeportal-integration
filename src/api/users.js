@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import * as backend from '@/api/backend'
+import store from '../store.js'
 
 const users_container = {
   module: {
@@ -8,7 +9,7 @@ const users_container = {
     state: {
       user_id: null,
       user_firstname: '',
-      access_token: '',
+      is_authenticated: '',
       user_details: {},
       user_webapps: [],
       user_groups: []
@@ -19,7 +20,7 @@ const users_container = {
       get_user_id (state) { return state.user_id },
       get_user_firstname (state) { return state.user_firstname },
       get_user_webapps (state) { return state.user_webapps },
-      get_access_token (state) { return state.access_token },
+      get_is_authenticated (state) { return state.is_authenticated },
       get_user_groups(state) { return state.user_groups }
     },
 
@@ -28,7 +29,7 @@ const users_container = {
       set_user_firstname (state, name) { state.user_firstname = name },
       set_user_details (state, user_details) { state.user_details = user_details },
       set_user_webapps (state, webapps) { state.user_webapps = webapps },
-      set_access_token (state, token) { state.access_token = token },
+      set_is_authenticated (state, is_authenticated) { state.is_authenticated = is_authenticated },
       set_user_groups (state, user_groups) { state.user_groups = user_groups }
     },
 
@@ -42,7 +43,7 @@ const users_container = {
         const response = await backend.create('/login/', request_body)
         context.commit('set_user_id', response.data['id'])
         context.commit('set_user_firstname', response.data['firstname'])
-        context.commit('set_access_token', response.data['access_token'])
+        store.commit('api/set_access_token', response.data['access_token'])
         return response
       },
       async authorize_google_user (context, auth_response) {

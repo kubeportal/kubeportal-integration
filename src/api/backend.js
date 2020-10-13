@@ -1,20 +1,23 @@
 import axios from 'axios'
 import to from 'await-to-js'
+import store from '../store.js'
 
 function canReadURLFromEnv () {
   return !!process.env['VUE_APP_BASE_URL']
 }
 
-function canReadTokenFromLocalStorage (item) {
-  return !!localStorage.getItem(item)
+function readTokenFromVuex (item) {
+  return store.getters[`api/get_${item}`]
 }
 
 function setAuthorizationHeader () {
-  return canReadTokenFromLocalStorage('access_token') ? `Bearer ${localStorage.getItem('access_token')}` : undefined
+  let tmp = readTokenFromVuex('access_token')
+  // eslint-disable-next-line
+  return !!tmp ? 'Bearer ' + tmp : undefined
 }
 
 function setCSRFToken () {
-  return canReadTokenFromLocalStorage('csrf_token') ? localStorage.getItem('csrf_token') : undefined
+  return readTokenFromVuex('csrf_token')
 }
 
 export function setBaseURLWithDefaultOrEnvValue () {
