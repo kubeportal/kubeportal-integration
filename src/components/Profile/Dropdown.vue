@@ -6,7 +6,7 @@
       </template>
       <v-list>
         <v-list-item v-for="(email, index) in current_user_emails" :key="index">
-          <v-list-item-title @click="change_email(email)">{{ email }}</v-list-item-title>
+          <v-list-item-title @click="$emit('change_primary_email', email)">{{ email }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -16,17 +16,10 @@
 <script>
 export default {
   name: 'Dropdown',
-  data () {
-    return {
-      primary_email: this.$store.getters['users/get_user_details']['primary_email'],
-      current_user_emails: this.$store.getters['users/get_user_details']['all_emails']
-    }
-  },
-  methods: {
-    change_email (email) {
-      console.log('click')
-      this.primary_email = email
-      this.$emit('change_primary_email')
+  props: ['primary_email'],
+  computed: {
+    current_user_emails () {
+      return this.$store.getters['users/get_user_details']['all_emails']
     }
   }
 }
