@@ -12,9 +12,9 @@
               <b-card-sub-title>Last name</b-card-sub-title>
               <b-card-text>{{ current_user['name'] }}</b-card-text>
               <b-card-sub-title>Primary Email</b-card-sub-title>
-              <b-card-text>{{ current_user['primary_email'] }}</b-card-text>
+              <b-card-text> {{ current_user['primary_email'] }}</b-card-text>
               <b-card-sub-title>User groups</b-card-sub-title>
-              <b-card-text>{{ current_user['user_groups'].join(', ') }}</b-card-text>
+              <b-card-text>{{ user_groups['name'] }}</b-card-text>
               <b-card-sub-title>Cluster access</b-card-sub-title>
               <b-card-text>{{ current_user['cluster_access'] }}</b-card-text>
           </b-card-body>
@@ -37,9 +37,19 @@ import EditModal from '@/components/Profile/EditModal'
 export default {
   name: 'Profile',
   components: { KubeInstallation, ContentCardHeader, KubeConfig, EditModal },
+  data () {
+    return {
+      primary_email: this.$store.getters['users/get_user_details']['primary_email']
+    }
+  },
   computed: {
-    current_user () {
-      return this.$store.getters['users/get_user_details']
+    current_user () { return this.$store.getters['users/get_user_details'] },
+    user_groups () { return this.$store.getters['users/get_user_groups'] }
+  },
+  methods: {
+    change_primary_email (email) {
+      console.log('click')
+      this.primary_email = email
     }
   }
 }

@@ -5,7 +5,7 @@
         Kubeportal
       </b-card-header>
       <b-card-body>
-        <v-alert class="alert" dense outlined type="error" v-if="is_authenticated !== 'true'">Login Failed.</v-alert>
+        <v-alert class="alert" dense outlined type="error" v-if="is_authenticated === 'false'">Login Failed.</v-alert>
         <b-card-text>
           <v-text-field label="user name" v-model="username" required></v-text-field>
           <v-text-field type="password" v-model="password" label="password" required></v-text-field>
@@ -25,11 +25,13 @@
 </template>
 
 <script>
+import to from 'await-to-js'
+import * as backend from '@/api/backend'
 export default {
   name: 'Login',
   data () {
     return {
-      is_authenticated: localStorage.getItem('is_authenticated'),
+      is_authenticated: '',
       username: '',
       password: '',
       isSignedIn: ''
@@ -38,43 +40,43 @@ export default {
   methods: {
     async login () {
       const request_body = { username: this.username, password: this.password }
-      const user_data_response = await this.$store.dispatch('users/post_login_data', request_body)
-      await this.handle_login_response(user_data_response)
+      const response = await this.$store.dispatch('users/post_login_data', request_body)
+      console.log(response);
+
+      await this.handle_login_response(response)
     },
     async signInWithGoogle () {
-      try {
-        const googleUser = await this.$gAuth.signIn()
-        if (!googleUser) {
-          return null
-        }
-        const auth_response = googleUser.getAuthResponse()
-        console.log('getAuthResponse', this.$gAuth.GoogleAuth.currentUser.get().getAuthResponse())
-        this.isSignedIn = this.$gAuth.isAuthorized
-        const response = await this.$store.dispatch('users/authorize_google_user', auth_response)
-        await this.handle_login_response(response)
-      } catch (error) {
-        console.log(error)
+      let error, googleUser
+      [error, googleUser] = await to(this.$gAuth.signIn())
+      if (!googleUser || error) {
+        console.log('google login failed')
+        this.is_authenticated = 'false'
+        return undefined
       }
+      const auth_response = googleUser.getAuthResponse()
+      console.log('getAuthResponse', this.$gAuth.GoogleAuth.currentUser.get().getAuthResponse())
+      this.isSignedIn = this.$gAuth.isAuthorized
+      const response = await this.$store.dispatch('users/authorize_google_user', auth_response)
+      await this.handle_login_response(response)
     },
-    async handle_login_response (user_data_response) {
-      if (user_data_response.status === 200) {
-        await this.$store.dispatch('users/get_user_details', user_data_response.data['id'])
-        this.$store.commit('users/set_is_authenticated', 'true')
-        this.set_local_storage()
-        await this.$router.push({ name: 'Kubeportal' })
-      } else {
-        console.log('login failed')
-        this.$store.commit('users/set_is_authenticated', 'false')
+    async handle_login_response (response) {
+      console.log(response)
+      if(response === undefined) {
+        this.is_authenticated = 'false'
         await this.$router.push({ name: 'Home' })
+      } else if (response.status === 200) {
+        this.$store.commit('users/set_is_authenticated', 'true')
+        await this.$store.dispatch('users/get_user_details', response.data['id'])
+        await this.$store.dispatch('users/get_user_groups')
+        await this.$router.push({ name: 'Kubeportal' })
       }
-    },
-    set_local_storage () {
-      console.log(`set local storage. authenticated: ${this.$store.getters['users/get_is_authenticated']}`)
-      localStorage.setItem('user_token', this.$store.getters['users/get_user_token'])
-      localStorage.setItem('firstname', this.$store.getters['users/get_user_firstname'])
-      localStorage.setItem('is_authenticated', this.$store.getters['users/get_is_authenticated'])
-      localStorage.setItem('user_id', this.$store.getters['users/get_user_id'])
     }
+  },
+  async mounted () {
+    let response
+    response = await backend.read('/api/')
+    this.$store.commit('api/set_csrf_token', response.data['csrf_token'])
+    this.$store.commit('api/set_api_version', response.data['default_api_version'])
   }
 }
 </script>

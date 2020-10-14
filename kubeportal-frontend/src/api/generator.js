@@ -55,7 +55,7 @@ const generator = {
     actions: {
       async validate_hostname (context, payload) {
         let request_body = { 'hostname' : payload }
-        const validation = await backend.create('/check/ingress', request_body)
+        const validation = await backend.create('/check/ingress/', request_body)
         console.log(validation)
         context.commit('setHostnameValidation', validation)
       }
