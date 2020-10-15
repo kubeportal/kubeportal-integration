@@ -4,9 +4,11 @@ metadata:
   name: kubeportal-api
   namespace: kubeportal-integration
 spec:
+  type: NodePort
   ports:
   - port: 8000
     protocol: TCP
+    nodePort: 30123
   selector:
     app.kubernetes.io/name: kubeportal-api
 ---
@@ -16,8 +18,10 @@ metadata:
   name: kubeportal-frontend
   namespace: kubeportal-integration
 spec:
+  type: NodePort
   ports:
   - port: 8086
     protocol: TCP
+    nodePort: 30124
   selector:
     app.kubernetes.io/name: kubeportal-frontend
