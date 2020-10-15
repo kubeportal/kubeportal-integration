@@ -22,7 +22,7 @@ spec:
         - containerPort: 8000
         envFrom:
         - configMapRef:
-            name: kubeportal-api
+            name: kubeportal
         volumeMounts:
         - name: kubeportal-api
           mountPath: /data
