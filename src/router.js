@@ -25,6 +25,11 @@ const router = new Router({
       name: 'Login',
       path: '/login',
       component: Login
+    }, {
+      name: 'invalidUrl',
+      path: '/*',
+      redirect: '/login',
+      component: Login
     }
   ]
 })
