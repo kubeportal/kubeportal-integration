@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kubeportal-api
-  namespace: kubeportal
+  namespace: kubeportal-integration
   labels:
     app.kubernetes.io/name: kubeportal-api
 spec:
@@ -36,7 +36,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kubeportal-frontend
-  namespace: kubeportal
+  namespace: kubeportal-integration
   labels:
     app.kubernetes.io/name: kubeportal-frontend
 spec:

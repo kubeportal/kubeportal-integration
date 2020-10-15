@@ -26,4 +26,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: kubeportal
+  namespace: kubeportal-integration

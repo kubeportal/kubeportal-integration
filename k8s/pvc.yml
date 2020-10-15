@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: kubeportal-api
-  namespace: kubeportal
+  namespace: kubeportal-integration
   labels:
     app.kubernetes.io/name: kubeportal-api
 spec:
