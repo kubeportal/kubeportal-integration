@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeportal-api
+  namespace: kubeportal
+  labels:
+    app.kubernetes.io/name: kubeportal-api
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubeportal-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kubeportal-api
+    spec:
+      containers:
+      - name: kubeportal-api
+        image: troeger/kubeportal-api:staging
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: kubeportal-api
+        volumeMounts:
+        - name: kubeportal-api
+          mountPath: /data
+
+      volumes:
+      - name: kubeportal-api
+        persistentVolumeClaim:
+          claimName: kubeportal-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeportal-frontend
+  namespace: kubeportal
+  labels:
+    app.kubernetes.io/name: kubeportal-frontend
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubeportal-frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kubeportal-frontend
+    spec:
+      containers:
+      - name: kubeportal-frontend
+        image: sachs/kubeportal-frontend:staging
+        ports:
+        - containerPort: 8086
