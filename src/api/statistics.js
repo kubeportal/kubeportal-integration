@@ -24,10 +24,10 @@ const statistics = {
     actions: {
       async get_cluster_infos (context, infos) {
         const newClusterInfo = []
-        await infos.forEach(async field => {
+        for (const field of infos) {
           const info = await backend.read(`/cluster/${field}/`)
           newClusterInfo.push(info.data)
-        })
+        }
         context.commit('set_cluster_info', newClusterInfo)
       }
     }
