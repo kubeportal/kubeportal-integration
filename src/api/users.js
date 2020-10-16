@@ -21,7 +21,7 @@ const users_container = {
       get_user_firstname (state) { return state.user_firstname },
       get_user_webapps (state) { return state.user_webapps },
       get_is_authenticated (state) { return state.is_authenticated },
-      get_user_groups(state) { return state.user_groups }
+      get_user_groups (state) { return state.user_groups }
     },
 
     mutations: {
@@ -29,7 +29,7 @@ const users_container = {
       set_user_firstname (state, name) { state.user_firstname = name },
       set_user_details (state, user_details) { state.user_details = user_details },
       set_user_webapps (state, webapps) { state.user_webapps = webapps },
-      set_is_authenticated (state, is_authenticated) { state.is_authenticated = is_authenticated },
+      set_is_authenticated (state, is_authenticated) { state.is_authenticated = is_authenticated }
     },
 
     actions: {
