@@ -2,7 +2,6 @@ import axios from 'axios'
 import to from 'await-to-js'
 import store from '../store.js'
 
-
 function canReadURLFromEnv () {
   return !!process.env['VUE_APP_BASE_URL']
 }
