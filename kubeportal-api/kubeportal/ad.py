@@ -22,17 +22,6 @@ class ActiveDirectoryBackend():
         if not self.server_adr:
             return None
 
-        if 'login' in request.POST:
-            username = request.POST['login'].lower()
-        elif 'username' in request.POST:
-            username = request.POST['username'].lower()
-        else:
-            return None
-        if 'password' in request.POST:
-            password = request.POST['password']
-        else:
-            return None
-
         # User Principal Name
         upn = "{}@{}".format(username, self.domainname)
         server = ldap3.Server(self.server_adr, get_info=ldap3.DSA, connect_timeout=1)
@@ -70,7 +59,9 @@ class ActiveDirectoryBackend():
                 defaults['alt_mails'] = [i.lower().replace("unix:", "").replace("smtp:", "") for i in entries['proxyAddresses'].value]
 
             try:
-                user, created = User.objects.update_or_create(username__iexact=username, defaults=defaults)
+                # update_or_create is not an option here, since this would 
+                # overwrite a modified default mail address
+                user, created = User.objects.get_or_create(username__iexact=username, defaults=defaults)
                 if created:
                     logger.debug("Created new user for Active Directory account {}".format(username))
                 else:

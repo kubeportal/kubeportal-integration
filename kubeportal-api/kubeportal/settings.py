@@ -5,7 +5,7 @@ from kubeportal.secret import get_secret_key
 
 
 class Common(Configuration):
-    VERSION = '0.4.0'
+    VERSION = '0.5.2'
     API_VERSION = 'v1.4.0'
 
     SITE_ID = 1
@@ -134,7 +134,7 @@ class Common(Configuration):
     USE_L10N = True
     USE_TZ = True
 
-    ALLOWED_URLS = values.ListValue(["http://localhost:8000", "http://127.0.0.1:8000"], environ_prefix='KUBEPORTAL')
+    ALLOWED_URLS = values.ListValue(["http://localhost:8000", "http://127.0.0.1:8000", "http://testserver"], environ_prefix='KUBEPORTAL')
     ALLOWED_URLS.setup('ALLOWED_URLS')
     ALLOWED_HOSTS = [urlparse(url).netloc.split(":")[0] for url in ALLOWED_URLS.value]
 

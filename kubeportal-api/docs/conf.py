@@ -1,10 +1,11 @@
 project = 'KubePortal'
 copyright = '2019, Peter Tröger'
 author = 'Peter Tröger'
-release = 'v0.4.0'
+release = 'v0.5.2'
 extensions = [
 	'sphinx_issues',
-    'sphinx.ext.autosectionlabel'	
+    'sphinx.ext.autosectionlabel',
+    'sphinxcontrib.openapi',
 ]
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
