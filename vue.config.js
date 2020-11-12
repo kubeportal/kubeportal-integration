@@ -1,13 +1,16 @@
 module.exports = {
-  lintOnSave: process.env.NODE_ENV !== 'production',
+  configureWebpack: {
+    performance: { hints: false }
+  },
   devServer: {
     overlay: {
       warnings: false,
       errors: false
     },
-    compress: true,
+    compress: false,
     disableHostCheck: true,
     port: 8086,
     host: '0.0.0.0'
   }
 }
+
