@@ -21,7 +21,7 @@ function setCSRFToken () {
 }
 
 export function setBaseURLWithDefaultOrEnvValue () {
-  const defaultUrl = 'http://127.0.0.1:8000'
+  const defaultUrl = 'https://cluster.datexis.com:443'
   const baseUrl = canReadURLFromEnv() ? process.env['VUE_APP_BASE_URL'] : defaultUrl
   const API_VERSION = 'v1.4.0'
   console.log(`${baseUrl}/api/${API_VERSION}`)
@@ -41,7 +41,7 @@ export let precall = axios.create(config) // only used for the initial request
 
 export async function read (relative_path) {
   if(relative_path === '/api/') {
-    const defaultUrl = 'http://127.0.0.1:8000'
+    const defaultUrl = 'https://cluster.datexis.com:443'
     precall.defaults.baseURL = canReadURLFromEnv() ? process.env['VUE_APP_BASE_URL'] : defaultUrl
     let error, response
     [error, response] = await to(precall.get(relative_path))
